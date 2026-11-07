@@ -3,22 +3,22 @@
     "displayName": "Plotune Requirements",
     "shortDescription": "Ideas to requirements",
     "longDescription": "Continuous requirements engineering from new ideas or existing specifications: manage traceable revisions, govern change and verification, and coordinate several workstreams or real native subagents within one session using user-owned storage.",
-    "developerName": "Veysel Kantarc\u0131lar",
+    "developerName": "Veysel Kantarcılar",
     "category": "Productivity",
     "capabilities": [
       "Interactive"
     ],
     "defaultPrompt": [
       "Take the next actionable engineering goal from my connected requirements workspace and its authorized Tasks and baseline. Claim the actual task, execute scoped work and persist truthful results; ask only for owner decisions.",
-      "Own delivery of my selected product\u2019s approved requirements and frozen baseline in my chosen workspace. Organize available subagents, implement and test missing scope, manage PRs and update the lead task until done or actually blocked.",
+      "Own delivery of my selected product’s approved requirements and frozen baseline in my chosen workspace. Organize available subagents, implement and test missing scope, manage PRs and update the lead task until done or actually blocked.",
       "Audit my selected product against its frozen requirements in the currently connected workspace. Verify exact revisions, gather real evidence, record actionable gaps and finish the audit without stopping at a plan."
     ]
   },
   "name": "plotune-requirements",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",
   "author": {
-    "name": "Veysel Kantarc\u0131lar"
+    "name": "Veysel Kantarcılar"
   },
   "keywords": [
     "plotune",

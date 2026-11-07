@@ -1,6 +1,6 @@
 {
   "name": "plotune-nexus",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control.",
   "author": {
     "name": "Plotune"
@@ -29,9 +29,9 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Plotune",
+    "displayName": "Plotune Nexus",
     "shortDescription": "Script-backed automotive skills and Plotune Nexus MCP workflows",
-    "longDescription": "Plotune provides script-backed agent skills for offline automotive engineering work such as CAN/DBC trace decoding, UDS payload and sequence linting, ODX/PDX inspection, A2L/LAB and XCP planning, calibration diffs, AUTOSAR architecture reports, safety and cybersecurity workproducts, requirements traceability, evidence packs, and tool-stack planning, plus resource-first Plotune Nexus MCP workflows for bounded CAN, DDS, XCP, UDS, UART, artifacts, gateways, containers, test sequences, and n8n automation JSON.",
+    "longDescription": "Plotune Nexus provides script-backed agent skills for offline automotive engineering work such as CAN/DBC trace decoding, UDS payload and sequence linting, ODX/PDX inspection, A2L/LAB and XCP planning, calibration diffs, AUTOSAR architecture reports, safety and cybersecurity workproducts, requirements traceability, evidence packs, and tool-stack planning, plus resource-first Plotune Nexus MCP workflows for bounded CAN, DDS, XCP, UDS, UART, artifacts, gateways, containers, test sequences, and n8n automation JSON.",
     "developerName": "Plotune",
     "category": "Developer Tools",
     "capabilities": [
