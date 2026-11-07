@@ -132,6 +132,42 @@ test("V1 config hook adds the skills directory once, for object and array config
   assert.deepEqual(arrayConfig.skills, ["/other", skillsDir]);
 });
 
+test("an unreadable SKILL.md is skipped and the other skills still register", async () => {
+  const dir = scratchPlugin({ "good": "---\nname: good\ndescription: d\n---\nx" });
+  // a directory where SKILL.md should be: existsSync is true but reading it throws EISDIR
+  fs.mkdirSync(path.join(dir, "skills", "broken", "SKILL.md"), { recursive: true });
+  const ctx = fakeCtx();
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    await (await load(dir)).default.setup(ctx);
+  } finally {
+    console.error = originalError;
+  }
+  assert.deepEqual(ctx.added.map((s) => s.id), ["good"]);
+});
+
+test("a missing package.json does not crash the plugin; the id falls back to the directory name", async () => {
+  const dir = scratchPlugin({ "a": "---\nname: a\ndescription: d\n---\nx" });
+  fs.unlinkSync(path.join(dir, "package.json"));
+  const mod = await load(dir);
+  assert.equal(mod.default.id, path.basename(dir));
+  const ctx = fakeCtx();
+  await mod.default.setup(ctx);
+  assert.deepEqual(ctx.added.map((s) => s.id), ["a"]);
+});
+
+test("a symlinked skill directory is registered", async () => {
+  const dir = scratchPlugin({});
+  const target = fs.mkdtempSync(path.join(os.tmpdir(), "oc-skill-target-"));
+  fs.writeFileSync(path.join(target, "SKILL.md"), "---\nname: linked\ndescription: d\n---\nx");
+  fs.mkdirSync(path.join(dir, "skills"), { recursive: true });
+  fs.symlinkSync(target, path.join(dir, "skills", "linked"), "dir");
+  const ctx = fakeCtx();
+  await (await load(dir)).default.setup(ctx);
+  assert.deepEqual(ctx.added.map((s) => s.id), ["linked"]);
+});
+
 test("each real plugin adapter registers exactly its own skills", async () => {
   for (const dir of pluginDirs()) {
     const skillNames = fs.readdirSync(path.join(dir, "skills"), { withFileTypes: true })

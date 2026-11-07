@@ -4,4 +4,4 @@ This project follows the [Contributor Covenant, version 2.1](https://www.contrib
 
 In short: be respectful, assume good faith, give and accept feedback constructively, and keep discussion about the work. Harassment and discrimination are not tolerated.
 
-To report a conduct problem, use GitHub's private reporting on this repository (**Security → Report a vulnerability**) and say that it is a conduct report, or contact a maintainer directly. Reports are handled privately.
+To report a conduct problem, contact a maintainer directly through GitHub (members of the `plotune` organization). Reports are handled privately.

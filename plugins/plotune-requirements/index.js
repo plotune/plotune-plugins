@@ -14,7 +14,15 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const skillsDir = path.join(root, "skills");
-const pluginId = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).name;
+// The plugin id is the package name; a missing or unreadable package.json must not take
+// the plugin down, so fall back to the directory name.
+const pluginId = (() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).name || path.basename(root);
+  } catch {
+    return path.basename(root);
+  }
+})();
 
 // Minimal frontmatter reader: plain, quoted and block-scalar values, indented continuations.
 function splitFrontmatter(text) {
@@ -43,17 +51,23 @@ function readSkills(dir = skillsDir) {
   if (!fs.existsSync(dir)) return [];
   const skills = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (!entry.isDirectory() || entry.name.startsWith(".")) continue;
-    const file = path.join(dir, entry.name, "SKILL.md");
-    if (!fs.existsSync(file)) continue;
-    const { data, body } = splitFrontmatter(fs.readFileSync(file, "utf8"));
-    skills.push({
-      id: entry.name,
-      name: data.name || entry.name,
-      ...(data.description ? { description: data.description } : {}),
-      path: file,
-      content: body,
-    });
+    if (entry.name.startsWith(".")) continue;
+    try {
+      // statSync follows symlinks, unlike entry.isDirectory()
+      if (!fs.statSync(path.join(dir, entry.name)).isDirectory()) continue;
+      const file = path.join(dir, entry.name, "SKILL.md");
+      if (!fs.existsSync(file)) continue;
+      const { data, body } = splitFrontmatter(fs.readFileSync(file, "utf8"));
+      skills.push({
+        id: entry.name,
+        name: data.name || entry.name,
+        ...(data.description ? { description: data.description } : {}),
+        path: file,
+        content: body,
+      });
+    } catch (err) {
+      console.error(`[${pluginId}] skipping unreadable skill "${entry.name}":`, err.message);
+    }
   }
   return skills;
 }

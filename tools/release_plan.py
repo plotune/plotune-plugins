@@ -21,6 +21,9 @@ import sys
 from collections import namedtuple
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from check_version_bumps import parse_version  # noqa: E402
+
 Release = namedtuple("Release", "plugin version tag notes")
 
 
@@ -54,8 +57,10 @@ def plan(root: Path, existing_tags) -> list:
             version = json.loads(manifest.read_text(encoding="utf-8")).get("version")
         except (OSError, ValueError):
             continue
-        if not isinstance(version, str) or not version:
-            continue
+        try:
+            parse_version(version)
+        except ValueError:
+            continue  # never tag a version that is not strict MAJOR.MINOR.PATCH
         tag = tag_name(plugin, version)
         if tag not in existing_tags:
             releases.append(Release(plugin, version, tag, _notes(root, plugin, version)))

@@ -78,6 +78,11 @@ class BumpVersionTest(unittest.TestCase):
                 bump_version.bump(self.root, "demo", bad)
         self.assertEqual(self.version(".claude-plugin/plugin.json"), "1.0.0")
 
+    def test_rejects_version_with_trailing_newline_and_changes_nothing(self):
+        with self.assertRaises(ValueError):
+            bump_version.bump(self.root, "demo", "1.1.0\n")
+        self.assertEqual(self.version(".claude-plugin/plugin.json"), "1.0.0")
+
     def test_rejects_non_semver(self):
         with self.assertRaises(ValueError):
             bump_version.bump(self.root, "demo", "v2")

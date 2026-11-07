@@ -1,6 +1,6 @@
 # Working in plotune-plugins
 
-A monorepo marketplace for Plotune plugins, installable from Claude Code, GitHub Copilot CLI, Codex, Cursor and OpenCode. Each plugin under `plugins/<name>/` has one shared body (`skills/`, `scripts/`, `references/`, …) and thin per-tool manifests.
+A monorepo marketplace for Plotune plugins, packaged for Claude Code, Codex, OpenCode, GitHub Copilot CLI and Cursor (see "Verified vs not" below). Each plugin under `plugins/<name>/` has one shared body (`skills/`, `scripts/`, `references/`, …) and thin per-tool manifests.
 
 ## The rule that matters most
 
@@ -49,4 +49,4 @@ claude plugin validate .
 
 ## Verified vs not
 
-Verified end to end: Claude Code and Codex install and update; OpenCode loads the adapter and registers every skill (tested against OpenCode 2.2.5) and updates by pinned tag. Not verified: GitHub Copilot CLI and Cursor (not installed where this was built) — say so rather than claiming they work.
+Verified end to end: Claude Code and Codex install and update; OpenCode loads the adapter and registers every skill (tested against OpenCode 2.2.5), and updates by pinned tag (tested against a local clone, not the GitHub URL). Not verified: GitHub Copilot CLI and Cursor (not installed where this was built) — say so rather than claiming they work.

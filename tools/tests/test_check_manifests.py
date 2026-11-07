@@ -204,7 +204,7 @@ class CheckManifestsTest(unittest.TestCase):
         self.assertOneError("category")
 
     def test_cursor_manifest_matching_is_ok_and_mismatch_fails(self):
-        dump(self.root / "plugins/demo/.cursor-plugin/plugin.json", {"name": "demo", "version": "1.0.0"})
+        dump(self.root / "plugins/demo/.cursor-plugin/plugin.json", {"name": "demo", "version": "1.0.0", **META})
         self.assertEqual(self.errors(), [])
         self.edit("plugins/demo/.cursor-plugin/plugin.json", lambda d: d.update(version="2.0.0"))
         self.assertOneError("version")
@@ -257,6 +257,40 @@ class CheckManifestsTest(unittest.TestCase):
         self.edit("plugins/demo/.codex-plugin/plugin.json",
                   lambda d: d.update(interface={"defaultPrompt": ["x" * 129]}))
         self.assertOneError("defaultPrompt")
+
+    # --- review fixes: every declared path, Cursor content, README table, mcp.json copy ---
+
+    def test_claude_icon_path_must_exist(self):
+        self.edit("plugins/demo/.claude-plugin/plugin.json", lambda d: d.update(icon="./assets/nope.png"))
+        self.assertOneError("icon")
+        (self.root / "plugins/demo/assets").mkdir()
+        (self.root / "plugins/demo/assets/nope.png").write_bytes(b"x")
+        self.assertEqual(self.errors(), [])
+
+    def test_cursor_logo_path_must_exist_with_or_without_dot_slash(self):
+        dump(self.root / "plugins/demo/.cursor-plugin/plugin.json",
+             {"name": "demo", "version": "1.0.0", **META, "logo": "assets/logo.png"})
+        self.assertOneError("logo")
+        (self.root / "plugins/demo/assets").mkdir()
+        (self.root / "plugins/demo/assets/logo.png").write_bytes(b"x")
+        self.assertEqual(self.errors(), [])
+
+    def test_cursor_manifest_needs_the_same_metadata(self):
+        dump(self.root / "plugins/demo/.cursor-plugin/plugin.json", {"name": "demo", "version": "1.0.0"})
+        self.assertOneError("license")
+
+    def test_readme_without_a_plugin_table_is_an_error(self):
+        (self.root / "README.md").write_text("# Plugins\n\nNo table here.\n", encoding="utf-8")
+        self.assertOneError("README")
+
+    def test_cursor_mcp_json_must_match_root_mcp_json(self):
+        servers = {"mcpServers": {"s": {"type": "http", "url": "https://a.example/mcp"}}}
+        dump(self.root / "plugins/demo/.mcp.json", servers)
+        dump(self.root / "plugins/demo/mcp.json", servers)
+        self.assertEqual(self.errors(), [])
+        servers["mcpServers"]["s"]["url"] = "https://b.example/mcp"
+        dump(self.root / "plugins/demo/mcp.json", servers)
+        self.assertOneError("mcp.json")
 
     def test_real_repo_tree_passes(self):
         self.assertEqual(check_manifests.check(REPO_ROOT), [])

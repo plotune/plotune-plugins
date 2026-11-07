@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping. Plugin changes are small and mechanical; the tooling in `tools/` does most of the bookkeeping and CI enforces the rest.
+Thanks for helping. Plugin changes are small and mechanical; the tooling in `tools/` does most of the bookkeeping and CI on pull requests checks the rest.
 
 ## Set up
 
@@ -23,7 +23,7 @@ node --test tools/tests/opencode-adapter.test.mjs                          # Ope
 3. Run the checks listed in [AGENTS.md](AGENTS.md). CI runs the same ones.
 4. Open a pull request. Merging to `main` is the release: the `release` workflow tags `<plugin>--v<version>` and publishes a GitHub Release from the changelog.
 
-Docs-only changes (`README.md`, `CHANGELOG.md`, `tests/`, `evals/` inside a plugin) need no bump.
+Changes that only touch a plugin's `README.md`, `CHANGELOG.md`, `tests/` or `evals/` need no bump (users do not receive those as behaviour).
 
 ## Adding a plugin
 

@@ -81,6 +81,9 @@ def _catalog_entries(data: dict, rel: str, errors: list) -> dict:
 def _declared_paths(manifest: dict) -> list:
     """(label, relative path) for every component/asset path a manifest declares."""
     found = []
+    for key in ("icon", "logo"):  # Claude listing icon, Cursor logo
+        if isinstance(manifest.get(key), str):
+            found.append((key, manifest[key]))
     skills = manifest.get("skills")
     for value in ([skills] if isinstance(skills, str) else skills if isinstance(skills, list) else []):
         found.append(("skills", value))
@@ -94,7 +97,8 @@ def _declared_paths(manifest: dict) -> list:
         shots = interface.get("screenshots")
         for value in (shots if isinstance(shots, list) else []):
             found.append(("interface.screenshots", value))
-    return [(label, value) for label, value in found if isinstance(value, str) and value.startswith("./")]
+    return [(label, value) for label, value in found
+            if isinstance(value, str) and value and not re.match(r"^([a-z][a-z0-9+.-]*:|/)", value, re.I)]
 
 
 def _check_manifest_content(label: str, manifest: dict, pdir: Path, root: Path, errors: list):
@@ -133,8 +137,7 @@ def check(root: Path) -> list:
                                      ("cursor", cursor, CURSOR_MANIFEST)):
             if manifest is not None:
                 names[label] = _name(manifest.get("name"), f"plugins/{pdir.name}/{rel}", errors)
-                if label != "cursor":
-                    _check_manifest_content(rel, manifest, pdir, root, errors)
+                _check_manifest_content(rel, manifest, pdir, root, errors)
         for label, name in names.items():
             if name is not None and name != pdir.name:
                 errors.append(f"plugins/{pdir.name}: {label} manifest name {name!r} must equal the directory name")
@@ -153,6 +156,13 @@ def check(root: Path) -> list:
                         f"plugins/{pdir.name}: name differs between manifests "
                         f"({names['claude']!r} vs {names[label]!r})")
         plugin_names[pdir.name] = names.get("claude") or pdir.name
+
+        # Cursor reads mcp.json at the plugin root; it must be the same server list as .mcp.json
+        both = [pdir / ".mcp.json", pdir / "mcp.json"]
+        if all(f.is_file() for f in both):
+            loaded = [_load(f, root, errors) for f in both]
+            if None not in loaded and loaded[0] != loaded[1]:
+                errors.append(f"plugins/{pdir.name}/mcp.json: differs from .mcp.json (Cursor copy must match)")
 
     known = set(plugin_names.values())
     catalogs = (("Claude", CLAUDE_CATALOG, True), ("Codex", CODEX_CATALOG, True), ("Cursor", CURSOR_CATALOG, False))
@@ -189,7 +199,9 @@ def check(root: Path) -> list:
         except (OSError, UnicodeDecodeError) as exc:
             errors.append(f"README.md: cannot read ({exc})")
             rows = {}
-        if rows:
+        if not rows:
+            errors.append("README.md: no plugin table found (rows like | [`name`](plugins/name) | 1.0.0 | ... |)")
+        else:
             for name in sorted(known):
                 if name not in rows:
                     errors.append(f"README.md: plugin {name!r} is missing from the plugin table")

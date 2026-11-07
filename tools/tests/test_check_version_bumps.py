@@ -52,6 +52,22 @@ class VersionBumpTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             cvb.parse_version("not-a-version")
 
+    def test_parse_version_rejects_whitespace_and_trailing_newline(self):
+        for bad in ("1.0.1\n", " 1.0.1", "1.0.1 ", "1.0.1\r\n"):
+            with self.assertRaises(ValueError, msg=repr(bad)):
+                cvb.parse_version(bad)
+
+    def test_deleted_plugin_is_not_an_error(self):
+        git(self.root, "rm", "-rq", "plugins/demo")
+        self.commit("remove demo")
+        self.assertEqual(self.errors(), [])
+
+    def test_malformed_manifest_is_reported_not_raised(self):
+        (self.root / "plugins/demo/skills/a.md").write_text("changed")
+        (self.root / "plugins/demo/.claude-plugin/plugin.json").write_text("{nope")
+        self.commit()
+        self.assertTrue(any("demo" in e for e in self.errors()))
+
     def test_no_changes_no_errors(self):
         self.assertEqual(self.errors(), [])
 

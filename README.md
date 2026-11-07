@@ -1,6 +1,6 @@
 # Plotune Plugins
 
-Plugin marketplace for [Plotune](https://www.plotune.net), usable from **Claude Code**, **GitHub Copilot CLI**, **Codex**, **Cursor** and **OpenCode**. One repository, one shared body per plugin, thin per-tool manifests.
+Plugin marketplace for [Plotune](https://www.plotune.net). It packages each plugin for **Claude Code**, **Codex**, **OpenCode**, **GitHub Copilot CLI** and **Cursor**; see the verification status below. One repository, one shared body per plugin, thin per-tool manifests.
 
 > **Trust notice.** Plugins can ship scripts your agent may run and MCP servers that reach external services or hardware. Install only what you trust, read what a plugin contains first, and see [SECURITY.md](SECURITY.md).
 
@@ -14,7 +14,7 @@ Plugin marketplace for [Plotune](https://www.plotune.net), usable from **Claude 
 
 ## Install and update
 
-Users add the marketplace once per tool, then install the plugins they want. A new release reaches you when you update (see each tool below); releases are announced as [GitHub Releases](../../releases) tagged `<plugin>--v<version>`.
+Users add the marketplace once per tool, then install the plugins they want. While this repository is private, every command below needs Git access to it (for example `gh auth login`). A new release reaches you when you update (see each tool below); releases are announced as [GitHub Releases](../../releases) tagged `<plugin>--v<version>`.
 
 | Tool | Status |
 |---|---|
@@ -58,11 +58,11 @@ Update: `copilot plugin marketplace update plotune-plugins`. *(Not verified, see
 
 ### Cursor
 
-Import this repository as a team marketplace in **Dashboard → Plugins & MCPs → Add Marketplace → Import from Repo**; Cursor re-indexes it when `main` changes. `plotune-stream` ships an `mcp.json`; add your own Nexus server in Cursor's MCP settings. *(Not verified, see the table above.)*
+Per Cursor's documentation, import this repository as a team marketplace (**Dashboard → Plugins & MCPs → Add Marketplace → Import from Repo**). `plotune-stream` ships an `mcp.json`; add your own Nexus server in Cursor's MCP settings. *(Not verified, see the table above: this follows Cursor's docs and has not been run.)*
 
 ### OpenCode
 
-OpenCode installs Git packages, so pin each plugin to its release tag. This registers the plugin's skills:
+OpenCode installs Git packages, so pin each plugin to its release tag. This registers the plugin's skills (release tags such as `plotune-stream--v0.2.0` are created by the release workflow when a version is merged, so they exist from that point on):
 
 ```bash
 opencode plugin add "git+https://github.com/plotune/plotune-plugins.git#plotune-stream--v0.2.0::path:plugins/plotune-stream"
@@ -80,10 +80,10 @@ Notes: OpenCode's `plugin check` / `plugin update` did not recognise these Git e
 ## How releases work
 
 1. Change a plugin; bump it with `python tools/bump_version.py <plugin> <version> --note "…"` (updates every manifest, this table and the changelog).
-2. CI checks everything agrees and that every changed plugin has a higher version.
+2. CI on the pull request checks everything agrees and that every changed plugin has a higher version. (Branch protection is not available on this plan, so nothing blocks a direct push to `main`; the release workflow therefore re-runs the consistency checks before it tags anything.)
 3. Merge to `main`. The `release` workflow tags `<plugin>--v<version>` and publishes a GitHub Release from the changelog.
 
-Claude Code only delivers an update when `version` changes, which is why step 2 is enforced. See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/adding-a-plugin.md](docs/adding-a-plugin.md).
+Claude Code only delivers an update when `version` changes, which is why step 2 exists. See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/adding-a-plugin.md](docs/adding-a-plugin.md).
 
 ## Repository layout
 

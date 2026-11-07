@@ -68,7 +68,7 @@ class ReleasePlanTest(unittest.TestCase):
         self.assertIn("0.1.0", notes)
 
     def test_version_prefix_is_not_confused_with_a_longer_version(self):
-        write_plugin(self.root, "demo", "1.1", "## 1.10.0 — other\nwrong\n\n## 1.1 — right\nright\n")
+        write_plugin(self.root, "demo", "1.1.0", "## 1.1.01 — other\nwrong\n\n## 1.1.0 — right\nright\n")
         notes = release_plan.plan(self.root, set())[0].notes
         self.assertIn("right", notes)
         self.assertNotIn("wrong", notes)
@@ -83,6 +83,11 @@ class ReleasePlanTest(unittest.TestCase):
         p.parent.mkdir(parents=True)
         p.write_text("{not json", encoding="utf-8")
         self.assertEqual([r.plugin for r in release_plan.plan(self.root, set())], ["demo"])
+
+    def test_invalid_version_strings_are_skipped_not_tagged(self):
+        for bad in ("1.0.x", "1.0.1 ", "v1.0.0", ""):
+            write_plugin(self.root, "weird", bad)
+            self.assertNotIn("weird", [r.plugin for r in release_plan.plan(self.root, set())], repr(bad))
 
     def test_main_prints_json_lines_for_the_workflow(self):
         import contextlib

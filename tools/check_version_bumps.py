@@ -23,11 +23,11 @@ from pathlib import Path, PurePosixPath
 MANIFEST = ".claude-plugin/plugin.json"
 IGNORED_FILES = {"CHANGELOG.md", "README.md"}
 IGNORED_DIRS = {"tests", "evals"}
-_SEMVER = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+_SEMVER = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 
 
 def parse_version(text: str) -> tuple:
-    match = _SEMVER.match(text.strip()) if isinstance(text, str) else None
+    match = _SEMVER.fullmatch(text) if isinstance(text, str) else None
     if not match:
         raise ValueError(f"not a MAJOR.MINOR.PATCH version: {text!r}")
     return tuple(int(part) for part in match.groups())
@@ -44,7 +44,18 @@ def _version_at(root: Path, ref: str, plugin: str):
         raw = _git(root, "show", f"{ref}:plugins/{plugin}/{MANIFEST}")
     except subprocess.CalledProcessError:
         return None
-    return json.loads(raw).get("version")
+    try:
+        return json.loads(raw).get("version")
+    except (ValueError, AttributeError) as exc:
+        raise ValueError(f"{MANIFEST} at {ref} cannot be read ({exc})") from exc
+
+
+def _exists_at(root: Path, ref: str, plugin: str) -> bool:
+    """Does the plugin directory hold any file at this ref?"""
+    try:
+        return bool(_git(root, "ls-tree", "-r", "--name-only", ref, f"plugins/{plugin}/").strip())
+    except subprocess.CalledProcessError:
+        return False
 
 
 def _is_functional(parts: tuple) -> bool:
@@ -70,11 +81,13 @@ def check(root: Path, base: str) -> list:
 
     errors = []
     for plugin in sorted(touched):
-        before = _version_at(root, merge_base, plugin)
-        if before is None:
-            continue  # new plugin: nothing to bump
-        after = _version_at(root, "HEAD", plugin)
         try:
+            before = _version_at(root, merge_base, plugin)
+            if before is None:
+                continue  # new plugin: nothing to bump
+            if not _exists_at(root, "HEAD", plugin):
+                continue  # plugin removed or renamed: nothing to bump
+            after = _version_at(root, "HEAD", plugin)
             if after is None or parse_version(after) <= parse_version(before):
                 errors.append(
                     f"plugins/{plugin}: files changed but version is still {after!r} "
