@@ -130,6 +130,56 @@ class CheckManifestsTest(unittest.TestCase):
         self.edit("plugins/demo/.codex-plugin/plugin.json", lambda d: d.update(version="9.9.9"))
         self.assertEqual(check_manifests.main([str(self.root)]), 1)
 
+    # --- final-review fixes: never crash, never pass silently on broken shapes ---
+
+    def test_invalid_utf8_names_the_file_without_crashing(self):
+        (self.root / "plugins/demo/.claude-plugin/plugin.json").write_bytes(b'{"name": "\xff"}')
+        self.assertOneError("plugins/demo/.claude-plugin/plugin.json")
+
+    def test_catalog_entry_name_is_a_list(self):
+        self.edit(".claude-plugin/marketplace.json",
+                  lambda d: d["plugins"].append({"name": ["x"], "source": "./plugins/x"}))
+        self.assertOneError("name must be a string")
+
+    def test_catalog_mixed_type_names_do_not_crash(self):
+        self.edit(".agents/plugins/marketplace.json",
+                  lambda d: d["plugins"].append({"name": 5}))
+        self.assertOneError("name must be a string")
+
+    def test_manifest_name_is_a_dict(self):
+        self.edit("plugins/demo/.claude-plugin/plugin.json", lambda d: d.update(name={"a": 1}))
+        self.assertOneError("name must be a string")
+
+    def test_manifest_root_is_a_list(self):
+        (self.root / "plugins/demo/.codex-plugin/plugin.json").write_text("[1]", encoding="utf-8")
+        self.assertOneError("must be a JSON object")
+
+    def test_catalog_entry_not_an_object(self):
+        self.edit(".claude-plugin/marketplace.json", lambda d: d["plugins"].append("demo"))
+        self.assertOneError("must be an object")
+
+    def test_catalog_entry_without_name(self):
+        self.edit(".agents/plugins/marketplace.json",
+                  lambda d: d["plugins"].append({"source": {"source": "local", "path": "./plugins/x"}}))
+        self.assertOneError("name must be a string")
+
+    def test_claude_source_must_point_at_plugin_directory(self):
+        self.edit(".claude-plugin/marketplace.json",
+                  lambda d: d["plugins"][0].update(source="./plugins/nope"))
+        self.assertOneError("./plugins/demo")
+
+    def test_codex_source_path_must_point_at_plugin_directory(self):
+        self.edit(".agents/plugins/marketplace.json",
+                  lambda d: d["plugins"][0]["source"].update(path="./plugins/nope"))
+        self.assertOneError("./plugins/demo")
+
+    def test_manifest_name_must_equal_directory_name(self):
+        for rel in ("plugins/demo/.claude-plugin/plugin.json", "plugins/demo/.codex-plugin/plugin.json"):
+            self.edit(rel, lambda d: d.update(name="other"))
+        for rel in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"):
+            self.edit(rel, lambda d: d["plugins"][0].update(name="other"))
+        self.assertOneError("directory")
+
     def test_real_repo_tree_passes(self):
         self.assertEqual(check_manifests.check(REPO_ROOT), [])
 
