@@ -1,6 +1,6 @@
 {
   "name": "plotune-stream",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics.",
   "author": {
     "name": "Plotune"
@@ -23,6 +23,19 @@
     "category": "Developer Tools",
     "capabilities": [
       "Interactive"
+    ],
+    "websiteURL": "https://www.plotune.net",
+    "privacyPolicyURL": "https://www.plotune.net/privacy",
+    "brandColor": "#6C73B6",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Which Plotune Stream projects can I use, and what events does the selected project record?",
+      "Show the latest events for my project from the last 24 hours, bounded to 100 results.",
+      "Build a funnel of my device sessions and show where they drop off."
     ]
-  }
+  },
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-stream",
+  "repository": "https://github.com/plotune/plotune-plugins",
+  "license": "Apache-2.0"
 }

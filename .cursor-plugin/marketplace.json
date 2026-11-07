@@ -1,0 +1,30 @@
+{
+  "name": "plotune-plugins",
+  "owner": {
+    "name": "plotune",
+    "url": "https://github.com/plotune"
+  },
+  "metadata": {
+    "description": "Plotune plugins for Claude Code, GitHub Copilot CLI, Codex, Cursor and OpenCode."
+  },
+  "plugins": [
+    {
+      "name": "plotune-requirements",
+      "source": "./plugins/plotune-requirements",
+      "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "plotune-nexus",
+      "source": "./plugins/plotune-nexus",
+      "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control.",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "plotune-stream",
+      "source": "./plugins/plotune-stream",
+      "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics.",
+      "license": "Apache-2.0"
+    }
+  ]
+}

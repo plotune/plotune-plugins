@@ -1,6 +1,6 @@
 {
   "name": "plotune-nexus",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control.",
   "author": {
     "name": "Plotune"
@@ -40,9 +40,17 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Run offline triage on these automotive artifacts.",
-      "Review this UDS diagnostic sequence before running it.",
-      "Turn this CAN/DDS workflow into a Plotune Nexus capture plan."
-    ]
-  }
+      "Connect to my Nexus device and summarize its CAN, UART and DDS status.",
+      "Decode this CAN trace with my DBC file and flag anomalies.",
+      "Plan a UDS diagnostic session for my ECU and lint the request sequence."
+    ],
+    "websiteURL": "https://www.plotune.net",
+    "privacyPolicyURL": "https://www.plotune.net/privacy",
+    "brandColor": "#6C73B6",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  },
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-nexus",
+  "repository": "https://github.com/plotune/plotune-plugins",
+  "license": "Apache-2.0"
 }

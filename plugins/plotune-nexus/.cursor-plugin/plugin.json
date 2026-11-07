@@ -1,0 +1,12 @@
+{
+  "name": "plotune-nexus",
+  "version": "0.3.0",
+  "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control.",
+  "author": {
+    "name": "Plotune"
+  },
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-nexus",
+  "repository": "https://github.com/plotune/plotune-plugins",
+  "license": "Apache-2.0",
+  "logo": "assets/logo.png"
+}

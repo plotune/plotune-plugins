@@ -1,7 +1,7 @@
 {
   "name": "plotune-nexus",
   "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Plotune"
   },
@@ -15,5 +15,9 @@
       "description": "MCP endpoint of YOUR Plotune Nexus device: http://<device-ip>/mcp on the same LAN/VPN, or https://<device-uuid>.plotune.net/mcp through its managed tunnel. The device UUID is in the Nexus local UI under device information.",
       "required": true
     }
-  }
+  },
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-nexus",
+  "repository": "https://github.com/plotune/plotune-plugins",
+  "license": "Apache-2.0",
+  "icon": "./assets/logo.png"
 }
