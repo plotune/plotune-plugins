@@ -1,5 +1,13 @@
 # Plotune Requirements — Portable Skills and Workspace Templates
 
+## Install
+
+```
+/plugin install plotune-requirements --marketplace plotune/plotune-plugins
+```
+
+Or see the [marketplace README](../../README.md) for Claude Code, Copilot CLI and Codex.
+
 An open-compatible, standards-informed **continuous** product and requirements engineering workflow with capability-aware multi-workstream orchestration. This plugin is a method and a **blank** workspace starter; it contains no default customer/project authority and makes no claim of standards certification.
 
 ## Start
