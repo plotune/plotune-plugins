@@ -1,6 +1,6 @@
 # Plotune Plugins
 
-Plugin marketplace for [Plotune](https://www.plotune.net). It packages each plugin for **Claude Code**, **Codex**, **OpenCode**, **GitHub Copilot CLI** and **Cursor**; see the verification status below. One repository, one shared body per plugin, thin per-tool manifests.
+Plugin marketplace for [Plotune](https://www.plotune.net). It packages each plugin for **Claude Code**, **Codex**, **OpenCode**, **GitHub Copilot CLI** and **Cursor**; every tool except Cursor has been verified (see below). One repository, one shared body per plugin, thin per-tool manifests.
 
 > **Trust notice.** Plugins can ship scripts your agent may run and MCP servers that reach external services or hardware. Install only what you trust, read what a plugin contains first, and see [SECURITY.md](SECURITY.md).
 
@@ -21,7 +21,7 @@ Users add the marketplace once per tool, then install the plugins they want. Whi
 | Claude Code | verified: install and update |
 | Codex | verified: install and update |
 | OpenCode | verified: skills load, install and update by pinned tag |
-| GitHub Copilot CLI | **not verified** (reads the same manifests as Claude Code) |
+| GitHub Copilot CLI | verified: install and marketplace update (Copilot CLI 1.0.107) |
 | Cursor | **not verified** (manifests follow Cursor's documented format) |
 
 ### Claude Code
@@ -54,7 +54,7 @@ copilot plugin marketplace add plotune/plotune-plugins
 copilot plugin install plotune-requirements@plotune-plugins
 ```
 
-Update: `copilot plugin marketplace update plotune-plugins`. *(Not verified, see the table above.)*
+Update: `copilot plugin marketplace update plotune-plugins`. Tested with Copilot CLI 1.0.107: all three plugins install (12 + 24 + 1 skills), `plotune-stream` registers its MCP server, and `plotune-nexus` correctly registers none (its per-user URL is Claude-only). Copilot reads the Claude manifests, so a Copilot user sees the same plugins and versions as a Claude Code user.
 
 ### Cursor
 
