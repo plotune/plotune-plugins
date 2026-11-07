@@ -1,0 +1,9 @@
+{
+  "executables": [
+    {
+      "name": "engine_app",
+      "machine": "zone_1",
+      "services": ["SpeedService"]
+    }
+  ]
+}

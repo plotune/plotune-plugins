@@ -20,6 +20,9 @@ jobs:
       - name: plotune-requirements tests
         run: python -I -m unittest discover -s tests
         working-directory: plugins/plotune-requirements
+      - name: plotune-nexus tests
+        run: python -I -m unittest discover -s tests
+        working-directory: plugins/plotune-nexus
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

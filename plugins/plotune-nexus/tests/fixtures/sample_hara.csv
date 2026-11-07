@@ -1,0 +1,3 @@
+hazard_id,hazardous_event,severity,exposure,controllability,asil,safety_goal,safe_state
+H-001,Loss of braking assistance,S3,E4,C3,D,SG-001,Hydraulic fallback
+H-002,Unexpected acceleration,S3,E3,C3,D,,

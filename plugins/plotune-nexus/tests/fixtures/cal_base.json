@@ -1,0 +1,7 @@
+{
+  "parameters": {
+    "IdleSpeedTarget": 750,
+    "FuelTrim": 1.0,
+    "BoostLimit": 180
+  }
+}

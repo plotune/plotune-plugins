@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ODX>
+  <DIAG-LAYER-CONTAINER>
+    <ECU-VARIANT>
+      <SHORT-NAME>EngineVariant</SHORT-NAME>
+    </ECU-VARIANT>
+  </DIAG-LAYER-CONTAINER>
+  <DIAG-SERVICE>
+    <SHORT-NAME>ReadVin</SHORT-NAME>
+    <SERVICE-ID>0x22</SERVICE-ID>
+    <PARAMS>
+      <PARAM>
+        <SHORT-NAME>VIN_DID</SHORT-NAME>
+        <CODED-VALUE>0xF190</CODED-VALUE>
+      </PARAM>
+    </PARAMS>
+  </DIAG-SERVICE>
+  <DATA-IDENTIFIER ID="did.vin">
+    <SHORT-NAME>VehicleIdentificationNumber</SHORT-NAME>
+    <ID>0xF190</ID>
+  </DATA-IDENTIFIER>
+  <VALID-REF ID-REF="did.vin"/>
+  <DTC>
+    <SHORT-NAME>EngineMisfire</SHORT-NAME>
+    <TROUBLE-CODE>0x0301</TROUBLE-CODE>
+  </DTC>
+  <ROUTINE>
+    <SHORT-NAME>EraseMemory</SHORT-NAME>
+    <ROUTINE-ID>0xFF00</ROUTINE-ID>
+  </ROUTINE>
+  <DIAG-SESSION>
+    <SHORT-NAME>ExtendedSession</SHORT-NAME>
+    <SESSION-ID>0x03</SESSION-ID>
+  </DIAG-SESSION>
+  <SOME-REF ID-REF="MissingReferencedObject"/>
+</ODX>

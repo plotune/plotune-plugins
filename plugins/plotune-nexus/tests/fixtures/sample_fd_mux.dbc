@@ -1,0 +1,15 @@
+VERSION "fd mux sample"
+
+NS_ :
+  BA_
+
+BS_:
+
+BU_: ECU1 ECU2
+
+BO_ 768 MuxData: 16 ECU1
+ SG_ Mode M : 0|4@1+ (1,0) [0|15] "" ECU2
+ SG_ SignalA m1 : 8|8@1+ (1,0) [0|255] "A" ECU2
+ SG_ SignalB m2 : 8|8@1+ (1,0) [0|255] "B" ECU2
+
+BA_ "GenMsgCycleTime" BO_ 768 10;
