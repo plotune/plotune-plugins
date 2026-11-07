@@ -34,8 +34,14 @@ jobs:
           python-version: "3.12"
       # A direct push to main skips pull-request CI, so re-check consistency before tagging.
       - name: Verify before releasing
+        env:
+          BEFORE: ${{ github.event.before }}
+          EVENT: ${{ github.event_name }}
         run: |
           set -euo pipefail
+          if [ "$EVENT" = "push" ]; then
+            python tools/check_version_bumps.py --base "$BEFORE"
+          fi
           python tools/check_manifests.py
           python tools/check_skills.py
           python tools/check_evals.py

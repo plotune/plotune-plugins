@@ -1,0 +1,75 @@
+name: evals
+
+# Runs each plugin's behaviour evals (`claude plugin eval`) on demand. They call a model and cost
+# money, so this is manual (workflow_dispatch) and capped, never automatic.
+#
+# One-time setup: add a repository secret named ANTHROPIC_API_KEY (Settings -> Secrets and
+# variables -> Actions). Without it the job exits successfully after printing a notice.
+
+on:
+  workflow_dispatch:
+    inputs:
+      plugin:
+        description: "Plugin directory name, or 'all'"
+        required: true
+        default: all
+      max_cost_usd:
+        description: "Hard cost ceiling per plugin, in USD"
+        required: true
+        default: "2"
+      threshold:
+        description: "Minimum case score (0-1) to pass; below 1 tolerates LLM-judge variance"
+        required: true
+        default: "0.66"
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      PLUGIN: ${{ inputs.plugin }}
+      MAX_COST: ${{ inputs.max_cost_usd }}
+      THRESHOLD: ${{ inputs.threshold }}
+    steps:
+      - name: Check for an API key
+        id: key
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::notice::ANTHROPIC_API_KEY is not set; skipping evals. Add it as a repository secret to run them."
+            echo "have=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "have=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        if: steps.key.outputs.have == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        if: steps.key.outputs.have == 'true'
+        with:
+          node-version: "22"
+      - name: Install Claude Code
+        if: steps.key.outputs.have == 'true'
+        run: npm i -g @anthropic-ai/claude-code
+      - name: Run evals
+        if: steps.key.outputs.have == 'true'
+        run: |
+          set -euo pipefail
+          # The plugin input is only ever used as a directory name under plugins/.
+          case "$PLUGIN" in
+            all) targets=$(ls plugins) ;;
+            *[!a-z0-9-]*|"") echo "::error::invalid plugin name"; exit 1 ;;
+            *) [ -d "plugins/$PLUGIN" ] || { echo "::error::no such plugin"; exit 1; }; targets="$PLUGIN" ;;
+          esac
+          status=0
+          for p in $targets; do
+            [ -d "plugins/$p/evals" ] || { echo "No evals for $p, skipping"; continue; }
+            echo "::group::$p"
+            (cd "plugins/$p" && claude plugin eval . --runs 1 --ablation none \
+              --max-cost-usd "$MAX_COST" --threshold "$THRESHOLD" --trust-plugin --no-publish) || status=1
+            echo "::endgroup::"
+          done
+          exit $status

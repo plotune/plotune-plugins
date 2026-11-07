@@ -13,7 +13,7 @@ Install only plugins you trust, read what a plugin ships before enabling it, and
 
 Please **do not open a public issue** for a security problem.
 
-Once this repository is public, use GitHub's private reporting: open **Security → Report a vulnerability**. While it is private (private reporting is not available yet), contact the maintainers directly through GitHub (members of the `plotune` organization). Include the plugin and version, what you found, and how to reproduce it. We aim to acknowledge a report within a few working days and will tell you what we decide.
+Once this repository is public, use GitHub's private reporting: open **Security → Report a vulnerability**. While it is private (private reporting is not available yet), write to **contact@plotune.net** (the address published on the [Plotune contact page](https://www.plotune.net/contact)) with "plotune-plugins security" in the subject, and do not include exploit details in public places. Include the plugin and version, what you found, and how to reproduce it. We aim to acknowledge a report within a few working days and will tell you what we decide.
 
 In scope: anything in this repository that could make a plugin run unintended code, leak credentials or data, or cause an unsafe hardware action; the release workflow; the checked-in tooling.
 Out of scope: vulnerabilities in the Plotune Stream or Nexus services themselves (report those through the product's own channels), and in Claude Code, Codex, Copilot, Cursor or OpenCode.

@@ -46,6 +46,8 @@ claude plugin eval . --runs 1 --ablation none --max-cost-usd 2 --no-publish
 
 Results land in `evals/results/`, which is git-ignored.
 
+You can also run them in CI: Actions → **evals** → *Run workflow* (needs an `ANTHROPIC_API_KEY` repository secret; without one the job exits after printing a notice). It is manual and cost-capped, never automatic.
+
 ## Security and conduct
 
 Report vulnerabilities privately (see [SECURITY.md](SECURITY.md)). Everyone is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).

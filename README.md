@@ -8,9 +8,9 @@ Plugin marketplace for [Plotune](https://www.plotune.net). It packages each plug
 
 | Plugin | Version | What it does |
 |---|---|---|
-| [`plotune-requirements`](plugins/plotune-requirements) | 0.9.0 | Portable continuous requirements engineering: Draft decomposition, independent approval governance, review, change impact and multi-agent delivery. |
-| [`plotune-nexus`](plugins/plotune-nexus) | 0.3.0 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. You enter your own Nexus device's MCP URL when enabling it. |
-| [`plotune-stream`](plugins/plotune-stream) | 0.2.0 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
+| [`plotune-requirements`](plugins/plotune-requirements) | 0.9.1 | Portable continuous requirements engineering: Draft decomposition, independent approval governance, review, change impact and multi-agent delivery. |
+| [`plotune-nexus`](plugins/plotune-nexus) | 0.3.1 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. You enter your own Nexus device's MCP URL when enabling it. |
+| [`plotune-stream`](plugins/plotune-stream) | 0.2.1 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
 
 ## Install and update
 
@@ -80,7 +80,7 @@ Notes: OpenCode's `plugin check` / `plugin update` did not recognise these Git e
 ## How releases work
 
 1. Change a plugin; bump it with `python tools/bump_version.py <plugin> <version> --note "…"` (updates every manifest, this table and the changelog).
-2. CI on the pull request checks everything agrees and that every changed plugin has a higher version. (Branch protection is not available on this plan, so nothing blocks a direct push to `main`; the release workflow therefore re-runs the consistency checks before it tags anything.)
+2. CI on the pull request checks everything agrees and that every changed plugin has a higher version. (Branch protection is not available on this plan, so nothing *blocks* a direct push to `main`. Instead the same version check runs on every push to `main`, flagging an un-bumped change, and the release workflow re-runs it, plus the consistency checks, before it tags anything, so an un-bumped push is never released.)
 3. Merge to `main`. The `release` workflow tags `<plugin>--v<version>` and publishes a GitHub Release from the changelog.
 
 Claude Code only delivers an update when `version` changes, which is why step 2 exists. See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/adding-a-plugin.md](docs/adding-a-plugin.md).

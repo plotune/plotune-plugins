@@ -5,3 +5,5 @@
 ## 0.8.3 — display name "Plotune Requirements" (metadata only)
 
 ## 0.9.0 — listing metadata (license, homepage, logo, Codex prompts within limits), Cursor manifest, OpenCode entry point, eval suite
+
+## 0.9.1 — Cursor manifest displayName (matches Cursor's own plugin format)
