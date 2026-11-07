@@ -1,0 +1,19 @@
+{
+  "name": "plotune-stream",
+  "version": "0.1.0",
+  "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics.",
+  "author": {
+    "name": "Plotune"
+  },
+  "keywords": ["plotune", "stream", "mcp", "events", "analytics", "dashboards"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Plotune Stream",
+    "shortDescription": "Query Plotune Stream event history",
+    "longDescription": "Connects to the Plotune Stream MCP server at stream.plotune.net and teaches the safe workflow: choose the project, discover events before querying, keep queries bounded and credit-aware, and confirm before changing webhooks or the data catalog.",
+    "developerName": "Plotune",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive"]
+  }
+}

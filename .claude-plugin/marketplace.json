@@ -14,6 +14,11 @@
       "name": "plotune-nexus",
       "source": "./plugins/plotune-nexus",
       "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control."
+    },
+    {
+      "name": "plotune-stream",
+      "source": "./plugins/plotune-stream",
+      "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics."
     }
   ]
 }
