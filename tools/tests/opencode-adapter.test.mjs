@@ -1,5 +1,5 @@
 // Tests for tools/opencode-adapter.js and every plugin's copy of it.
-// Run: node --test tools/tests/
+// Run: node --test tools/tests/opencode-adapter.test.mjs
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";

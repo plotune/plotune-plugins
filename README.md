@@ -1,6 +1,8 @@
 # Plotune Plugins
 
-Plugin marketplace for [Plotune](https://github.com/plotune), usable from **Claude Code**, **GitHub Copilot CLI** and **OpenAI Codex**. One repository, one shared plugin body per plugin, thin per-platform manifests.
+Plugin marketplace for [Plotune](https://www.plotune.net), usable from **Claude Code**, **GitHub Copilot CLI**, **Codex**, **Cursor** and **OpenCode**. One repository, one shared body per plugin, thin per-tool manifests.
+
+> **Trust notice.** Plugins can ship scripts your agent may run and MCP servers that reach external services or hardware. Install only what you trust, read what a plugin contains first, and see [SECURITY.md](SECURITY.md).
 
 ## Plugins
 
@@ -10,7 +12,17 @@ Plugin marketplace for [Plotune](https://github.com/plotune), usable from **Clau
 | [`plotune-nexus`](plugins/plotune-nexus) | 0.3.0 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. You enter your own Nexus device's MCP URL when enabling it. |
 | [`plotune-stream`](plugins/plotune-stream) | 0.2.0 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
 
-## Install
+## Install and update
+
+Users add the marketplace once per tool, then install the plugins they want. A new release reaches you when you update (see each tool below); releases are announced as [GitHub Releases](../../releases) tagged `<plugin>--v<version>`.
+
+| Tool | Status |
+|---|---|
+| Claude Code | verified: install and update |
+| Codex | verified: install and update |
+| OpenCode | verified: skills load, install and update by pinned tag |
+| GitHub Copilot CLI | **not verified** (reads the same manifests as Claude Code) |
+| Cursor | **not verified** (manifests follow Cursor's documented format) |
 
 ### Claude Code
 
@@ -21,18 +33,9 @@ Plugin marketplace for [Plotune](https://github.com/plotune), usable from **Clau
 /plugin install plotune-stream@plotune-plugins
 ```
 
-Update with `/plugin marketplace update plotune-plugins`. Background auto-update is off by default; turn it on under **Marketplaces** in `/plugin`.
+Update: `/plugin marketplace update plotune-plugins`, then `claude plugin update <plugin>@plotune-plugins`, then restart. Background auto-update is off by default; turn it on under **Marketplaces** in `/plugin`.
 
-### GitHub Copilot CLI
-
-```
-copilot plugin marketplace add plotune/plotune-plugins
-copilot plugin install plotune-requirements@plotune-plugins
-copilot plugin install plotune-nexus@plotune-plugins
-copilot plugin install plotune-stream@plotune-plugins
-```
-
-Update with `copilot plugin marketplace update plotune-plugins`.
+`plotune-nexus` asks for **Your Nexus MCP URL** when you enable it (`http://<device-ip>/mcp` on your LAN, or `https://<device-uuid>.plotune.net/mcp`) and connects to *your* device. Change it later in `/config`.
 
 ### Codex
 
@@ -40,33 +43,63 @@ Update with `copilot plugin marketplace update plotune-plugins`.
 codex plugin marketplace add plotune/plotune-plugins
 ```
 
-Then install `plotune-requirements`, `plotune-nexus` or `plotune-stream` from the Plotune Plugins marketplace in Codex. Refresh with `codex plugin marketplace upgrade plotune-plugins`.
+Then install the plugins you want from the *Plotune Plugins* marketplace in Codex. Update: `codex plugin marketplace upgrade plotune-plugins` (installed plugins are refreshed too).
+
+Codex plugin manifests have no per-user settings, so connect Nexus yourself: `codex mcp add plotune-nexus --url <your Nexus MCP URL>` (the `plotune-mcp-setup` skill walks through it).
+
+### GitHub Copilot CLI
+
+```
+copilot plugin marketplace add plotune/plotune-plugins
+copilot plugin install plotune-requirements@plotune-plugins
+```
+
+Update: `copilot plugin marketplace update plotune-plugins`. *(Not verified, see the table above.)*
+
+### Cursor
+
+Import this repository as a team marketplace in **Dashboard → Plugins & MCPs → Add Marketplace → Import from Repo**; Cursor re-indexes it when `main` changes. `plotune-stream` ships an `mcp.json`; add your own Nexus server in Cursor's MCP settings. *(Not verified, see the table above.)*
+
+### OpenCode
+
+OpenCode installs Git packages, so pin each plugin to its release tag. This registers the plugin's skills:
+
+```bash
+opencode plugin add "git+https://github.com/plotune/plotune-plugins.git#plotune-stream--v0.2.0::path:plugins/plotune-stream"
+```
+
+Update to a new release by adding the new tag and removing the old one:
+
+```bash
+opencode plugin add    "git+https://github.com/plotune/plotune-plugins.git#plotune-stream--v0.3.0::path:plugins/plotune-stream"
+opencode plugin remove "git+https://github.com/plotune/plotune-plugins.git#plotune-stream--v0.2.0::path:plugins/plotune-stream"
+```
+
+Notes: OpenCode's `plugin check` / `plugin update` did not recognise these Git entries in testing, and re-adding a moving branch stays on the cached version, so use tags. The adapter registers skills only; add MCP servers yourself in `opencode.json`. Tested with OpenCode 2.2.5 against a local clone of this repository; a private GitHub repository needs your Git credentials.
+
+## How releases work
+
+1. Change a plugin; bump it with `python tools/bump_version.py <plugin> <version> --note "…"` (updates every manifest, this table and the changelog).
+2. CI checks everything agrees and that every changed plugin has a higher version.
+3. Merge to `main`. The `release` workflow tags `<plugin>--v<version>` and publishes a GitHub Release from the changelog.
+
+Claude Code only delivers an update when `version` changes, which is why step 2 is enforced. See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/adding-a-plugin.md](docs/adding-a-plugin.md).
 
 ## Repository layout
 
 ```
 .claude-plugin/marketplace.json     Claude Code + Copilot CLI catalog
 .agents/plugins/marketplace.json    Codex catalog
+.cursor-plugin/marketplace.json     Cursor catalog
 plugins/<name>/
-  .claude-plugin/plugin.json        Claude Code + Copilot CLI manifest (source of truth for name/version)
-  .codex-plugin/plugin.json         Codex manifest (same name/version)
-  skills/ ...                       shared content
-tools/check_manifests.py            drift check, run in CI
+  .claude-plugin/plugin.json        Claude/Copilot manifest (source of truth for name + version)
+  .codex-plugin/plugin.json         Codex manifest
+  .cursor-plugin/plugin.json        Cursor manifest
+  package.json, index.js            OpenCode entry point (index.js is generated)
+  skills/ …                         the shared body
+  evals/                            behaviour tests for `claude plugin eval`
+tools/                              checks, bump/release/sync scripts and their tests
 ```
-
-## Releasing a plugin update
-
-1. Change the plugin files.
-2. Bump `version` in **both** manifests of that plugin and add a `CHANGELOG.md` entry. Never set `version` in a catalog entry.
-3. Run `python tools/check_manifests.py` and `claude plugin validate .`.
-4. Merge to `main`. Users get the update on their next marketplace update.
-5. Optionally tag `plotune-requirements--v<version>`.
-
-Claude Code only delivers an update when `version` changes, so always bump it.
-
-## Adding a plugin
-
-See [docs/adding-a-plugin.md](docs/adding-a-plugin.md).
 
 ## License
 

@@ -1,0 +1,23 @@
+name: Plugin or skill request
+description: Suggest a new plugin, skill or workflow.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you want your agent to be able to do?
+      description: Describe the task, not the implementation.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does it belong?
+      options: [New skill in an existing plugin, New plugin, Packaging / another tool, Not sure]
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Which tool you use, and anything you already tried.

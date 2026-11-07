@@ -1,0 +1,47 @@
+name: release
+
+# When a plugin's version on main has no tag yet, tag it `<plugin>--v<version>` and publish a
+# GitHub Release whose notes are that version's CHANGELOG.md section. The tag is also what
+# OpenCode users pin to (see README). Idempotent: already-tagged versions are skipped.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write # create tags and releases
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0 # need existing tags
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - name: Create missing tags and releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python tools/release_plan.py > "$RUNNER_TEMP/plan.jsonl"
+          if [ ! -s "$RUNNER_TEMP/plan.jsonl" ]; then
+            echo "Nothing to release."
+            exit 0
+          fi
+          while IFS= read -r line; do
+            tag=$(jq -r .tag <<<"$line")
+            title=$(jq -r .title <<<"$line")
+            jq -r .notes <<<"$line" > "$RUNNER_TEMP/notes.md"
+            echo "Releasing $tag"
+            gh release create "$tag" --target "$GITHUB_SHA" --title "$title" --notes-file "$RUNNER_TEMP/notes.md"
+          done < "$RUNNER_TEMP/plan.jsonl"
