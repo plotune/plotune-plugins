@@ -1,0 +1,20 @@
+{
+  "name": "plotune-plugins",
+  "interface": {
+    "displayName": "Plotune Plugins"
+  },
+  "plugins": [
+    {
+      "name": "plotune-requirements",
+      "source": {
+        "source": "local",
+        "path": "./plugins/plotune-requirements"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
