@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "plotune-nexus": {
+      "type": "http",
+      "url": "${user_config.nexus_mcp_url}"
+    }
+  }
+}

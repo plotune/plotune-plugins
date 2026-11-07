@@ -7,6 +7,13 @@ description: Use when configuring an MCP client to connect to a Plotune Nexus de
 
 Plotune Nexus MCP uses HTTP URL transport. Do not configure it as a local stdio server.
 
+## Who registers the server
+
+There is no shared Nexus endpoint: every user connects to their **own** device.
+
+- **Claude Code:** this plugin asks for "Your Nexus MCP URL" when it is enabled and registers `plotune-nexus` with it. Change the URL later in `/config` (plugin options) or with `/plugin`. To point at a second device, add it manually with `claude mcp add` under a different server name (Step 2).
+- **Codex and other clients:** the plugin cannot ask for a per-user URL, so register the server yourself with the commands in Step 2.
+
 ## Step 1 — Choose Your Endpoint
 
 | Scenario | Endpoint |

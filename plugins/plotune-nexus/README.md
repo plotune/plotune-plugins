@@ -8,6 +8,13 @@
 
 Or see the [marketplace README](../../README.md) for Claude Code, Copilot CLI and Codex.
 
+### Connect your own Nexus
+
+Each user connects their own device; there is no shared endpoint.
+
+- **Claude Code:** enabling the plugin prompts for **Your Nexus MCP URL** (`http://<device-ip>/mcp` on your LAN/VPN, or `https://<device-uuid>.plotune.net/mcp` through the managed tunnel) and registers the `plotune-nexus` MCP server with it. Sign in through the OAuth prompt on first use.
+- **Codex:** run `codex mcp add plotune-nexus --url <your URL>`. The `plotune-mcp-setup` skill walks through this.
+
 This plugin provides agent skills for offline automotive engineering work and Plotune Nexus MCP servers.
 
 It is intentionally script-backed and hardware-safe:
