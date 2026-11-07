@@ -33,9 +33,15 @@ jobs:
         run: python tools/check_mcp_urls.py --offline
       - name: OpenCode entry points are in sync with the template
         run: python tools/sync_opencode.py --check
-      - name: Changed plugins have a higher version
+      - name: Changed plugins have a higher version (pull request)
         if: github.event_name == 'pull_request'
         run: python tools/check_version_bumps.py --base "origin/${{ github.base_ref }}"
+      # Branch protection is not available on this plan, so a direct push to main is only caught here.
+      - name: Changed plugins have a higher version (push)
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: python tools/check_version_bumps.py --base "$BEFORE"
 
       - name: Tool tests (Python)
         run: python -I -m unittest discover -s tools/tests

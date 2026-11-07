@@ -1,6 +1,7 @@
 {
   "name": "plotune-requirements",
-  "version": "0.9.0",
+  "displayName": "Plotune Requirements",
+  "version": "0.9.1",
   "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",
   "author": {
     "name": "Veysel Kantarcılar"

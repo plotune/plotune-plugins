@@ -68,6 +68,21 @@ class VersionBumpTest(unittest.TestCase):
         self.commit()
         self.assertTrue(any("demo" in e for e in self.errors()))
 
+    def test_all_zeros_base_means_nothing_to_compare(self):
+        # GitHub sends this as `before` for a branch's first push
+        (self.root / "plugins/demo/skills/a.md").write_text("changed")
+        self.commit()
+        self.assertEqual(cvb.check(self.root, "0" * 40), [])
+
+    def test_base_can_be_a_plain_commit_sha_as_in_a_push_event(self):
+        base_sha = git(self.root, "rev-parse", "main")
+        (self.root / "plugins/demo/skills/a.md").write_text("changed")
+        self.commit()
+        self.assertTrue(any("demo" in e for e in cvb.check(self.root, base_sha)))
+        write_manifest(self.root, "demo", "1.0.1")
+        self.commit("bump")
+        self.assertEqual(cvb.check(self.root, base_sha), [])
+
     def test_no_changes_no_errors(self):
         self.assertEqual(self.errors(), [])
 

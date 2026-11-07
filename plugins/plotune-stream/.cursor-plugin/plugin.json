@@ -1,6 +1,7 @@
 {
   "name": "plotune-stream",
-  "version": "0.2.0",
+  "displayName": "Plotune Stream",
+  "version": "0.2.1",
   "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics.",
   "author": {
     "name": "Plotune"

@@ -67,6 +67,8 @@ def _is_functional(parts: tuple) -> bool:
 
 def check(root: Path, base: str) -> list:
     root = Path(root)
+    if re.fullmatch(r"0+", base):
+        return []  # GitHub's `before` for a branch's first push: nothing to compare against
     try:
         merge_base = _git(root, "merge-base", base, "HEAD").strip()
         changed = _git(root, "diff", "--name-only", merge_base, "HEAD").splitlines()
