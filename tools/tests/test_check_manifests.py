@@ -21,22 +21,28 @@ def load(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+META = {"license": "Apache-2.0", "homepage": "https://example.com/demo",
+        "repository": "https://github.com/example/demo"}
+
+
 def make_tree(root: Path) -> Path:
-    """Minimal valid tree: one plugin 'demo' 1.0.0, both manifests, both catalogs."""
+    """Minimal valid tree: one plugin 'demo' 1.0.0, both manifests, both catalogs, README."""
     author = {"name": "Veysel Kantarcılar"}
     dump(root / "plugins/demo/.claude-plugin/plugin.json",
-         {"name": "demo", "version": "1.0.0", "author": author})
+         {"name": "demo", "version": "1.0.0", "author": author, **META})
     dump(root / "plugins/demo/.codex-plugin/plugin.json",
-         {"name": "demo", "version": "1.0.0", "author": author}, ensure_ascii=True)
+         {"name": "demo", "version": "1.0.0", "author": author, **META}, ensure_ascii=True)
     dump(root / ".claude-plugin/marketplace.json", {
         "name": "plotune-plugins", "owner": {"name": "plotune"},
-        "plugins": [{"name": "demo", "source": "./plugins/demo"}]})
+        "plugins": [{"name": "demo", "source": "./plugins/demo", "category": "productivity"}]})
     dump(root / ".agents/plugins/marketplace.json", {
         "name": "plotune-plugins",
         "plugins": [{"name": "demo",
                      "source": {"source": "local", "path": "./plugins/demo"},
                      "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
                      "category": "Productivity"}]})
+    (root / "README.md").write_text(
+        "| Plugin | Version |\n|---|---|\n| [`demo`](plugins/demo) | 1.0.0 | Demo. |\n", encoding="utf-8")
     return root
 
 
@@ -179,6 +185,78 @@ class CheckManifestsTest(unittest.TestCase):
         for rel in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"):
             self.edit(rel, lambda d: d["plugins"][0].update(name="other"))
         self.assertOneError("directory")
+
+    # --- metadata, extra manifests, README drift, asset paths ---
+
+    def test_missing_metadata_in_either_manifest(self):
+        for rel in ("plugins/demo/.claude-plugin/plugin.json", "plugins/demo/.codex-plugin/plugin.json"):
+            for field in ("license", "homepage", "repository"):
+                with self.subTest(rel=rel, field=field):
+                    data = load(self.root / rel)
+                    saved = data.pop(field)
+                    dump(self.root / rel, data)
+                    self.assertOneError(field)
+                    data[field] = saved
+                    dump(self.root / rel, data)
+
+    def test_claude_catalog_entry_missing_category(self):
+        self.edit(".claude-plugin/marketplace.json", lambda d: d["plugins"][0].pop("category"))
+        self.assertOneError("category")
+
+    def test_cursor_manifest_matching_is_ok_and_mismatch_fails(self):
+        dump(self.root / "plugins/demo/.cursor-plugin/plugin.json", {"name": "demo", "version": "1.0.0"})
+        self.assertEqual(self.errors(), [])
+        self.edit("plugins/demo/.cursor-plugin/plugin.json", lambda d: d.update(version="2.0.0"))
+        self.assertOneError("version")
+
+    def test_package_json_version_must_match(self):
+        dump(self.root / "plugins/demo/package.json", {"name": "x", "version": "1.0.0"})
+        self.assertEqual(self.errors(), [])
+        self.edit("plugins/demo/package.json", lambda d: d.update(version="1.0.1"))
+        self.assertOneError("package.json")
+
+    def test_cursor_catalog_must_list_every_plugin(self):
+        dump(self.root / ".cursor-plugin/marketplace.json",
+             {"name": "plotune-plugins", "plugins": [{"name": "demo", "source": "./plugins/demo"}]})
+        self.assertEqual(self.errors(), [])
+        self.edit(".cursor-plugin/marketplace.json", lambda d: d["plugins"].clear())
+        self.assertOneError("cursor-plugin/marketplace.json")
+
+    def test_readme_version_must_match_manifest(self):
+        (self.root / "README.md").write_text("| [`demo`](plugins/demo) | 0.9.0 | Demo. |\n", encoding="utf-8")
+        self.assertOneError("README")
+
+    def test_readme_must_list_every_plugin_when_it_has_a_table(self):
+        (self.root / "README.md").write_text("| [`other`](plugins/other) | 1.0.0 | x |\n", encoding="utf-8")
+        self.assertOneError("README")
+
+    def test_missing_readme_is_skipped(self):
+        (self.root / "README.md").unlink()
+        self.assertEqual(self.errors(), [])
+
+    def test_declared_component_paths_must_exist(self):
+        self.edit("plugins/demo/.codex-plugin/plugin.json", lambda d: d.update(skills="./skills/"))
+        self.assertOneError("skills")
+        (self.root / "plugins/demo/skills").mkdir()
+        self.assertEqual(self.errors(), [])
+        self.edit("plugins/demo/.codex-plugin/plugin.json",
+                  lambda d: d.update(interface={"logo": "./assets/logo.png"}))
+        self.assertOneError("logo")
+        (self.root / "plugins/demo/assets").mkdir()
+        (self.root / "plugins/demo/assets/logo.png").write_bytes(b"x")
+        self.assertEqual(self.errors(), [])
+
+    def test_mcp_servers_path_must_exist(self):
+        self.edit("plugins/demo/.claude-plugin/plugin.json", lambda d: d.update(mcpServers="./mcp/x.json"))
+        self.assertOneError("mcpServers")
+
+    def test_default_prompt_limits(self):
+        self.edit("plugins/demo/.codex-plugin/plugin.json",
+                  lambda d: d.update(interface={"defaultPrompt": ["a", "b", "c", "d"]}))
+        self.assertOneError("defaultPrompt")
+        self.edit("plugins/demo/.codex-plugin/plugin.json",
+                  lambda d: d.update(interface={"defaultPrompt": ["x" * 129]}))
+        self.assertOneError("defaultPrompt")
 
     def test_real_repo_tree_passes(self):
         self.assertEqual(check_manifests.check(REPO_ROOT), [])

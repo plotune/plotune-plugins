@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "plotune-stream": {
+      "type": "http",
+      "url": "https://stream.plotune.net/mcp"
+    }
+  }
+}

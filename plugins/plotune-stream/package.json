@@ -1,0 +1,14 @@
+{
+  "name": "plotune-stream",
+  "version": "0.2.0",
+  "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics.",
+  "type": "module",
+  "main": "index.js",
+  "private": true,
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-stream",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plotune/plotune-plugins"
+  }
+}

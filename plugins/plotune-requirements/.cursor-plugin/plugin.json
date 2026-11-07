@@ -1,0 +1,43 @@
+{
+  "name": "plotune-requirements",
+  "version": "0.9.0",
+  "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",
+  "author": {
+    "name": "Veysel Kantarcılar"
+  },
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-requirements",
+  "repository": "https://github.com/plotune/plotune-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "plotune",
+    "requirements",
+    "open source",
+    "portable",
+    "requirements engineering",
+    "autopilot",
+    "stakeholder needs",
+    "actors",
+    "use cases",
+    "traceability",
+    "baselines",
+    "verification",
+    "sqlite",
+    "google sheets",
+    "csv",
+    "RMS",
+    "engineering delivery",
+    "continuous requirements",
+    "subagent delegation",
+    "change impact",
+    "requirement quality",
+    "existing requirements",
+    "change requests",
+    "verification coverage",
+    "ISO 26262",
+    "Automotive SPICE",
+    "requirement decomposition",
+    "draft requirements",
+    "independent approval"
+  ],
+  "logo": "assets/logo.png"
+}

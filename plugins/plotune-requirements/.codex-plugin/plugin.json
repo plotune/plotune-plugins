@@ -9,13 +9,18 @@
       "Interactive"
     ],
     "defaultPrompt": [
-      "Take the next actionable engineering goal from my connected requirements workspace and its authorized Tasks and baseline. Claim the actual task, execute scoped work and persist truthful results; ask only for owner decisions.",
-      "Own delivery of my selected product’s approved requirements and frozen baseline in my chosen workspace. Organize available subagents, implement and test missing scope, manage PRs and update the lead task until done or actually blocked.",
-      "Audit my selected product against its frozen requirements in the currently connected workspace. Verify exact revisions, gather real evidence, record actionable gaps and finish the audit without stopping at a plan."
-    ]
+      "Take the next actionable goal from my requirements workspace, do the scoped work and record truthful results.",
+      "Own delivery of my product's approved requirements and frozen baseline: implement, test and update the lead task.",
+      "Audit my product against its frozen requirements: verify exact revisions, gather evidence and record gaps."
+    ],
+    "websiteURL": "https://www.plotune.net",
+    "privacyPolicyURL": "https://www.plotune.net/privacy",
+    "brandColor": "#6C73B6",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
   },
   "name": "plotune-requirements",
-  "version": "0.8.3",
+  "version": "0.9.0",
   "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",
   "author": {
     "name": "Veysel Kantarcılar"
@@ -51,5 +56,8 @@
     "draft requirements",
     "independent approval"
   ],
-  "skills": "./skills"
+  "skills": "./skills",
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-requirements",
+  "repository": "https://github.com/plotune/plotune-plugins",
+  "license": "Apache-2.0"
 }

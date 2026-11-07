@@ -1,0 +1,14 @@
+{
+  "name": "plotune-requirements",
+  "version": "0.9.0",
+  "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",
+  "type": "module",
+  "main": "index.js",
+  "private": true,
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune-requirements",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plotune/plotune-plugins"
+  }
+}

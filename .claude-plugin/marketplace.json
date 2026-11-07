@@ -8,17 +8,20 @@
     {
       "name": "plotune-requirements",
       "source": "./plugins/plotune-requirements",
-      "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery."
+      "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",
+      "category": "productivity"
     },
     {
       "name": "plotune-nexus",
       "source": "./plugins/plotune-nexus",
-      "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control."
+      "description": "Script-backed agent skills for offline automotive engineering workflows plus Plotune Nexus MCP hardware execution, artifacts, diagnostics, and safe device control.",
+      "category": "development"
     },
     {
       "name": "plotune-stream",
       "source": "./plugins/plotune-stream",
-      "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics."
+      "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics.",
+      "category": "monitoring"
     }
   ]
 }

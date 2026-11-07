@@ -6,9 +6,9 @@ Plugin marketplace for [Plotune](https://github.com/plotune), usable from **Clau
 
 | Plugin | Version | What it does |
 |---|---|---|
-| [`plotune-requirements`](plugins/plotune-requirements) | 0.8.3 | Portable continuous requirements engineering: Draft decomposition, independent approval governance, review, change impact and multi-agent delivery. |
-| [`plotune-nexus`](plugins/plotune-nexus) | 0.2.0 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. You enter your own Nexus device's MCP URL when enabling it. |
-| [`plotune-stream`](plugins/plotune-stream) | 0.1.1 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
+| [`plotune-requirements`](plugins/plotune-requirements) | 0.9.0 | Portable continuous requirements engineering: Draft decomposition, independent approval governance, review, change impact and multi-agent delivery. |
+| [`plotune-nexus`](plugins/plotune-nexus) | 0.3.0 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. You enter your own Nexus device's MCP URL when enabling it. |
+| [`plotune-stream`](plugins/plotune-stream) | 0.2.0 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
 
 ## Install
 
