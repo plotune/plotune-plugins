@@ -1,0 +1,30 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Manifest and catalog drift check
+        run: python tools/check_manifests.py
+      - name: Drift check tests
+        run: python -I -m unittest discover -s tools/tests
+      - name: plotune-requirements tests
+        run: python -I -m unittest discover -s tests
+        working-directory: plugins/plotune-requirements
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: claude plugin validate (advisory until the CLI install is confirmed in CI)
+        continue-on-error: true
+        run: |
+          npm i -g @anthropic-ai/claude-code
+          claude plugin validate .

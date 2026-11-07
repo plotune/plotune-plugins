@@ -1,0 +1,14 @@
+{
+  "name": "plotune-plugins",
+  "description": "Plotune plugins for Claude Code, GitHub Copilot CLI and Codex",
+  "owner": {
+    "name": "plotune"
+  },
+  "plugins": [
+    {
+      "name": "plotune-requirements",
+      "source": "./plugins/plotune-requirements",
+      "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery."
+    }
+  ]
+}
