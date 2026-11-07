@@ -1,0 +1,42 @@
+/begin PROJECT SampleProject ""
+  /begin MODULE SampleModule ""
+    /begin COMPU_METHOD SpeedCompu ""
+      RAT_FUNC "%6.1" "rpm"
+    /end COMPU_METHOD
+    /begin RECORD_LAYOUT ScalarLayout
+      FNC_VALUES 1 UWORD ROW_DIR DIRECT
+    /end RECORD_LAYOUT
+    /begin MEASUREMENT EngineSpeed "Engine speed"
+      UWORD NO_COMPU_METHOD 0 0 0 8000
+      ECU_ADDRESS 0x1000
+      FORMAT "%6.1"
+      UNIT "rpm"
+    /end MEASUREMENT
+    /begin MEASUREMENT CoolantTemp "Coolant temp"
+      SWORD NO_COMPU_METHOD 0 0 -40 215
+      ECU_ADDRESS 0x1002
+    /end MEASUREMENT
+    /begin CHARACTERISTIC IdleSpeedTarget "Idle speed target"
+      VALUE 0x2000 UWORD NO_COMPU_METHOD 0 0 500 1200
+    /end CHARACTERISTIC
+    /begin CHARACTERISTIC IdleSpeedTarget "Duplicate"
+      VALUE 0x2004 UWORD NO_COMPU_METHOD 0 0 500 1200
+    /end CHARACTERISTIC
+    /begin AXIS_PTS ThrottleAxis "Axis"
+      ECU_ADDRESS 0x2100
+      UNIT "%"
+    /end AXIS_PTS
+    /begin GROUP EngineGroup ""
+      /begin REF_MEASUREMENT
+        EngineSpeed
+        CoolantTemp
+      /end REF_MEASUREMENT
+    /end GROUP
+    /begin IF_DATA XCP
+      /begin XCP_ON_CAN
+        CAN_ID_MASTER 0x555
+        CAN_ID_SLAVE 0x556
+      /end XCP_ON_CAN
+    /end IF_DATA
+  /end MODULE
+/end PROJECT

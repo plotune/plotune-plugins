@@ -1,0 +1,3 @@
+threat_id,damage_id,threat_scenario,attack_path,impact,feasibility,risk,treatment,cybersecurity_goal
+T-001,D-001,Unauthorized diagnostic write,Exposed diagnostic connector,high,medium,high,,CG-001
+T-002,D-002,Replay update package,OTA metadata reuse,medium,low,medium,signature freshness,CG-002

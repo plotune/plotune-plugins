@@ -1,0 +1,7 @@
+{
+  "parameters": {
+    "IdleSpeedTarget": 800,
+    "FuelTrim": 1.0,
+    "SparkOffset": 2
+  }
+}
