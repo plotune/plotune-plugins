@@ -5,9 +5,9 @@ Status: Draft for review
 
 ## Goal
 
-`plotune/plt-plugins` is a single public monorepo that acts as a plugin marketplace for **Claude Code**, **GitHub Copilot CLI** and **OpenAI Codex**. Users add it once per platform and receive plugin updates through each platform's native update mechanism. The first plugin is `plotune-requirements` (from `rms.zip`). The plotune nexus and stream plugins will be added later as siblings.
+`plotune/plotune-plugins` is a single public monorepo that acts as a plugin marketplace for **Claude Code**, **GitHub Copilot CLI** and **OpenAI Codex**. Users add it once per platform and receive plugin updates through each platform's native update mechanism. The first plugin is `plotune-requirements` (from `rms.zip`). The plotune nexus and stream plugins will be added later as siblings.
 
-Until it is ready the repo stays private; it becomes public when the first release is done.
+The repo was renamed from `plt-plugins` to `plotune-plugins` (2026-11-07) so the repo, marketplace and install commands share one name. Until it is ready the repo stays private; it becomes public when the first release is done.
 
 ## Constraints and findings
 
@@ -60,12 +60,12 @@ Marketplace name: `plotune-plugins`, owner `plotune`.
 ## User commands (documented in root README)
 
 ```
-Claude Code:  /plugin marketplace add plotune/plt-plugins
+Claude Code:  /plugin marketplace add plotune/plotune-plugins
               /plugin install plotune-requirements@plotune-plugins
               (optional) enable auto-update in /plugin → Marketplaces
-Copilot CLI:  copilot plugin marketplace add plotune/plt-plugins
+Copilot CLI:  copilot plugin marketplace add plotune/plotune-plugins
               copilot plugin install plotune-requirements@plotune-plugins
-Codex:        codex plugin marketplace add plotune/plt-plugins
+Codex:        codex plugin marketplace add plotune/plotune-plugins
               codex plugin marketplace upgrade plotune-plugins   # to update
 ```
 
@@ -99,7 +99,6 @@ Each gets `plugins/<name>/` with both manifests plus catalog entries in both fil
 
 ## Out of scope
 
-- Renaming the GitHub repo (`plotune/plt-plugins` is kept unless the owner decides otherwise).
 - Making the repo public, org-level distribution, or marketplace submissions.
 - Plugin dependencies between plugins.
 - A manifest generator; manifests are hand-written and checked.
