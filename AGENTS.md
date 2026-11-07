@@ -49,4 +49,4 @@ claude plugin validate .
 
 ## Verified vs not
 
-Verified end to end: Claude Code and Codex install and update; OpenCode loads the adapter and registers every skill (tested against OpenCode 2.2.5), and updates by pinned tag (tested against a local clone, not the GitHub URL). Not verified: GitHub Copilot CLI and Cursor (not installed where this was built) — say so rather than claiming they work.
+Verified end to end: Claude Code and Codex install and update; OpenCode loads the adapter and registers every skill (tested against OpenCode 2.2.5), installs from the GitHub release tags, and updates by pinned tag (the update flow was tested against a local clone). Not verified: GitHub Copilot CLI and Cursor (not installed where this was built) — say so rather than claiming they work.

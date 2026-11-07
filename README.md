@@ -75,7 +75,7 @@ opencode plugin add    "git+https://github.com/plotune/plotune-plugins.git#plotu
 opencode plugin remove "git+https://github.com/plotune/plotune-plugins.git#plotune-stream--v0.2.0::path:plugins/plotune-stream"
 ```
 
-Notes: OpenCode's `plugin check` / `plugin update` did not recognise these Git entries in testing, and re-adding a moving branch stays on the cached version, so use tags. The adapter registers skills only; add MCP servers yourself in `opencode.json`. Tested with OpenCode 2.2.5 against a local clone of this repository; a private GitHub repository needs your Git credentials.
+Notes: OpenCode's `plugin check` / `plugin update` did not recognise these Git entries in testing, and re-adding a moving branch stays on the cached version, so use tags. The adapter registers skills only; add MCP servers yourself in `opencode.json`. Tested with OpenCode 2.2.5: installing all three plugins from their GitHub release tags registered all 37 skills, and the tag-to-tag update flow was tested against a local clone. While the repository is private, OpenCode needs your Git credentials.
 
 ## How releases work
 
