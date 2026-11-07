@@ -8,6 +8,7 @@ Plugin marketplace for [Plotune](https://github.com/plotune), usable from **Clau
 |---|---|---|
 | [`plotune-requirements`](plugins/plotune-requirements) | 0.8.2 | Portable continuous requirements engineering: Draft decomposition, independent approval governance, review, change impact and multi-agent delivery. |
 | [`plotune-nexus`](plugins/plotune-nexus) | 0.1.0 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. Connect it to your own Nexus device's MCP URL. |
+| [`plotune-stream`](plugins/plotune-stream) | 0.1.0 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
 
 ## Install
 
@@ -17,6 +18,7 @@ Plugin marketplace for [Plotune](https://github.com/plotune), usable from **Clau
 /plugin marketplace add plotune/plotune-plugins
 /plugin install plotune-requirements@plotune-plugins
 /plugin install plotune-nexus@plotune-plugins
+/plugin install plotune-stream@plotune-plugins
 ```
 
 Update with `/plugin marketplace update plotune-plugins`. Background auto-update is off by default; turn it on under **Marketplaces** in `/plugin`.
@@ -27,6 +29,7 @@ Update with `/plugin marketplace update plotune-plugins`. Background auto-update
 copilot plugin marketplace add plotune/plotune-plugins
 copilot plugin install plotune-requirements@plotune-plugins
 copilot plugin install plotune-nexus@plotune-plugins
+copilot plugin install plotune-stream@plotune-plugins
 ```
 
 Update with `copilot plugin marketplace update plotune-plugins`.
@@ -37,7 +40,7 @@ Update with `copilot plugin marketplace update plotune-plugins`.
 codex plugin marketplace add plotune/plotune-plugins
 ```
 
-Then install `plotune-requirements` or `plotune-nexus` from the Plotune Plugins marketplace in Codex. Refresh with `codex plugin marketplace upgrade plotune-plugins`.
+Then install `plotune-requirements`, `plotune-nexus` or `plotune-stream` from the Plotune Plugins marketplace in Codex. Refresh with `codex plugin marketplace upgrade plotune-plugins`.
 
 ## Repository layout
 

@@ -1,0 +1,11 @@
+{
+  "name": "plotune-stream",
+  "version": "0.1.0",
+  "description": "Plotune Stream MCP connection plus a safe-use orientation skill for querying engineering event history, dashboards and analytics.",
+  "author": {
+    "name": "Plotune"
+  },
+  "keywords": ["plotune", "stream", "mcp", "events", "analytics", "dashboards"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
