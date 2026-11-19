@@ -38,6 +38,8 @@ A single conversation can coordinate new-product discovery, existing-requirement
 
 ## Continuous child requirements and approvals
 
+For a feature-level or system-level goal on a new or existing system, use `skills/requirements-cycle/SKILL.md`: once the user says go, the main agent becomes the Orchestrator of a Designer / Build / Verify V-cycle loop (Build brings its own Independent reviewer), stops itself only on goal deviation or impact outside the goal's scope, and the user can stop it at any time. Narrow single-role requests skip the loop.
+
 When normal engineering work exposes missing subordinate obligations, compose `skills/requirement-decomposition/SKILL.md`. In an authorized writable workspace, new child requirements are created directly as auditable `Draft rev 1` with parent links, without stopping for per-Draft approval. Use independent reviewer/approver responsibility; a lead may approve only with an explicit bounded owner delegation and never a revision it authored. The hierarchy can deepen naturally until the requirements become individually verifiable; neither frozen scope nor a parent approval passes to the children. Read-only review stays read-only.
 
 ## Existing requirements and continuous review
