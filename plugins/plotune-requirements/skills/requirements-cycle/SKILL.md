@@ -28,7 +28,7 @@ Before the first role is spawned, the Orchestrator proposes a short team plan an
 
 The plan states:
 
-- **Per role** (Designer, Build, Verify and Build's Independent reviewer): the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0; and the escalation it may use (a stronger model or effort) if it keeps blocking for lack of capacity.
+- **Per role** (Designer, Build, Verify and Build's Independent reviewer): the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0; its autonomy (goal only, goal with approach hints, or step list: the more capable the role, the less method it gets); and the escalation it may use (a stronger model or effort) if it keeps blocking for lack of capacity.
 - **Staffing timeline:** when each role is first needed, what it waits on, and when it is released. A role is spawned when its work is due and not before, so nothing sits idle; roles whose work does not depend on each other run in parallel. A role keeps its context only where that helps (the Independent reviewer always starts fresh).
 - **Shared resources** (platform services, simulators and compute, test equipment, devices, people): for each, who uses it and when, how access is arranged (a lock or queue the user designs, or the Orchestrator's own proposal if the user has none), and what it costs in time or money when that is knowable.
 - **The Orchestrator's own plan** for running the loop with those resources, including what it expects to need from the user.
@@ -116,7 +116,11 @@ There are no iteration caps. The user may also stop at any moment ("that is enou
 
 ## Delegation and existing systems
 
-A role's packet follows `work-orchestration` (and `schema/delegation-packet.schema.json` where useful) and adds the role's file from `roles/`, the names of the skills it should load and its approved model, permissions and resource access, because a subagent does not inherit this skill's text. A packet is a brief, not a permission. Re-read live revisions and the baseline when a role returns; a changed revision is an impact-analysis trigger, not something to merge blindly.
+A role's packet follows `work-orchestration` (and `schema/delegation-packet.schema.json` where useful) and adds the role's file from `roles/`, the names of the skills it should load and its approved model, permissions and resource access, because a subagent does not inherit this skill's text. A packet is a brief, not a permission.
+
+Keep packets small. A packet gives the goal, why it matters, the boundaries (what must not change), pointers to the sources that hold the truth (records, baseline, repository paths, earlier results) and the form of the result. It does not prescribe the method; a hint, if given, is labelled a suggestion. Point to sources instead of pasting them, so roles read current material themselves, and let roles read each other's outputs directly in the shared sources while the Orchestrator keeps the lines and the decisions instead of relaying every message. See `roles/packet-example.md`.
+
+Re-read live revisions and the baseline when a role returns; a changed revision is an impact-analysis trigger, not something to merge blindly.
 
 On an existing system, build against the existing baseline and leave it untouched: new obligations are Drafts, revised ones advance their revision and their tests go stale, old PASS results stay history for the old revision, and the changes become a successor baseline through the normal process.
 
