@@ -13,13 +13,26 @@ This skill holds only the roles, the lines between them and the loop rules. The 
 
 - **Applies:** a feature-level or system-level goal, on a new system or on an existing one ("we are building X", "add support for Y to the existing system").
 - **Does not apply:** a narrow single-role request ("verify requirement X", "write this requirement", "fix this bug"). Hand it directly to the one role, or do that role's work inline, and do not start the loop. Spawn a role only when its output changes the next decision; never use an agent for something one read call answers.
+- **Optional:** the loop is a tool, not an obligation. If the Orchestrator judges that the goal does not need it, it says so in one line and works with the normal skills instead.
 - **Capability:** check what the host really offers for subagents. If it offers none, run the roles as separate sequential passes; the rules below still hold. A pass cannot approve what the same pass authored, so such approvals go to the user. Never claim a role ran in the background.
 
 ## Phase 0: before the loop
 
 1. **Read first** (`workspace-management`). For an existing system read its products, baselines, requirements, Actors, Use Cases, open findings, test and verification state, and the code. Never ask the user what the workspace already says.
 2. **Ask only the delta** (`idea-to-requirements` for new ground), batched. Numeric limits and similar commitments are the user's decisions; never invent them. No loop and no records beyond what the user already authorised.
-3. **Start only on the user's go-ahead** ("let's start" or equivalent). Then say once that Orchestrator mode is active and record the goal, the **scope** (the products and baselines the goal covers, written explicitly), the baseline to build against and the approval authority the user delegated (`lead-task-tracking` for where and how, so the loop can resume). Mode ends when the goal closes or the user stops it.
+3. **Move on only on the user's go-ahead** ("let's start" or equivalent). Then say once that Orchestrator mode is active and record the goal, the **scope** (the products and baselines the goal covers, written explicitly), the baseline to build against and the approval authority the user delegated (`lead-task-tracking` for where and how, so the loop can resume). Mode ends when the goal closes or the user stops it. The go-ahead opens Phase 1; it does not yet start any role.
+
+## Phase 1: team plan, approved before anything is spawned
+
+Before the first role is spawned, the Orchestrator proposes a short team plan and asks the user to approve or change it. The loop starts only after that approval. Work that runs inline, such as a narrow request, needs no plan.
+
+The plan states:
+
+- **Per role** (Designer, Build, Verify and Build's Independent reviewer): the model, the effort, and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0.
+- **Shared resources** (platform services, simulators and compute, test equipment, devices, people): for each, who uses it and when, how access is arranged (a lock or queue the user designs, or the Orchestrator's own proposal if the user has none), and what it costs in time or money when that is knowable.
+- **The Orchestrator's own plan** for running the loop with those resources, including what it expects to need from the user.
+
+There are no fixed rules for models, effort or resources: the Orchestrator proposes with its own judgement and the user decides. Offer only models the host can really launch; if the user names one it cannot, say so and ask for another instead of substituting silently. If the host cannot choose models per role, say so and ask what to do. Record the approved plan with the goal, and put each role's model, permissions and resource access into its packet; give a role only the access it needs. Ask again before widening any authority or changing a role's model; scheduling inside the approved plan needs no new approval.
 
 ## The Orchestrator
 
@@ -85,7 +98,7 @@ There are no iteration caps. The user may also stop at any moment ("that is enou
 
 ## Delegation and existing systems
 
-A role's packet follows `work-orchestration` (and `schema/delegation-packet.schema.json` where useful) and adds the role's file from `roles/` and the names of the skills it should load, because a subagent does not inherit this skill's text. A packet is a brief, not a permission. Re-read live revisions and the baseline when a role returns; a changed revision is an impact-analysis trigger, not something to merge blindly.
+A role's packet follows `work-orchestration` (and `schema/delegation-packet.schema.json` where useful) and adds the role's file from `roles/`, the names of the skills it should load and its approved model, permissions and resource access, because a subagent does not inherit this skill's text. A packet is a brief, not a permission. Re-read live revisions and the baseline when a role returns; a changed revision is an impact-analysis trigger, not something to merge blindly.
 
 On an existing system, build against the existing baseline and leave it untouched: new obligations are Drafts, revised ones advance their revision and their tests go stale, old PASS results stay history for the old revision, and the changes become a successor baseline through the normal process.
 
