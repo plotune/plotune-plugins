@@ -5,7 +5,9 @@ description: Run a V-cycle delivery loop for a feature-level or system-level goa
 
 # Requirements cycle: Orchestrator mode
 
-The V-model is not summarised here. Three roles, **Designer**, **Build** and **Verify**, together hold its full responsibility; adding or removing helper agents never changes who is responsible. The agent the user talks to becomes the **Orchestrator** when this skill starts the loop. There is no separate orchestrator agent, and the user only ever talks to the Orchestrator. Compose `workspace-management`, `requirements-governance`, `requirement-decomposition`, `change-impact`, `verification-coverage` and `work-orchestration`; this skill adds the roles, lines of communication and loop rules and does not replace them.
+The V-model is not summarised here. Three roles, **Designer**, **Build** and **Verify**, together hold its full responsibility; adding or removing helper agents never changes who is responsible. The agent the user talks to becomes the **Orchestrator** when this skill starts the loop. There is no separate orchestrator agent, and the user only ever talks to the Orchestrator.
+
+This skill holds only the roles, the lines between them and the loop rules. The methods live in the plugin's other skills and are not repeated here: each role's contract in `roles/` names the skills it loads, and a role loads only what its current step needs.
 
 ## When the loop applies
 
@@ -15,13 +17,13 @@ The V-model is not summarised here. Three roles, **Designer**, **Build** and **V
 
 ## Phase 0: before the loop
 
-1. **Read first.** Resolve the user's workspace through `workspace-management`. For an existing system read its products, baselines, requirements, Actors, Use Cases, open findings, test and verification state, and the code. Never ask the user what the workspace already says.
-2. **Ask only the delta,** using `idea-to-requirements` for new ground. This phase is normal conversation; no loop, no records beyond what the user already authorised.
-3. **Start only on the user's go-ahead** ("let's start" or equivalent). Then say once that Orchestrator mode is active, and record the goal, the scope (products and baselines the goal covers), the baseline to build against, and the approval authority the user delegated. Mode ends when the goal closes or the user stops it.
+1. **Read first** (`workspace-management`). For an existing system read its products, baselines, requirements, Actors, Use Cases, open findings, test and verification state, and the code. Never ask the user what the workspace already says.
+2. **Ask only the delta** (`idea-to-requirements` for new ground), batched. Numeric limits and similar commitments are the user's decisions; never invent them. No loop and no records beyond what the user already authorised.
+3. **Start only on the user's go-ahead** ("let's start" or equivalent). Then say once that Orchestrator mode is active and record the goal, the **scope** (the products and baselines the goal covers, written explicitly), the baseline to build against and the approval authority the user delegated (`lead-task-tracking` for where and how, so the loop can resume). Mode ends when the goal closes or the user stops it.
 
 ## The Orchestrator
 
-It owns no V step. It authors no requirement text, code or test result. It keeps the loop state, applies lifecycle transitions that fall within the delegation (the author of a revision never approves it), builds delegation packets, relays and batches questions to the user, and reports. Approve happens only inside the delegation the user recorded; **freeze and release are the user's** unless the user delegates them explicitly.
+It owns no V step. It authors no requirement text, code or test result. It keeps the loop state, applies the lifecycle transitions that fall within the delegation (`requirements-governance`; the author of a revision never approves it), builds delegation packets (`work-orchestration`), judges failure routing and cross-scope impact (`change-impact`), relays and batches questions to the user, and reports. **Freeze and release are the user's** unless the user delegates them explicitly.
 
 ## Roles and V steps (nine-step reference)
 
@@ -37,10 +39,7 @@ It owns no V step. It authors no requirement text, code or test result. It keeps
 | 8 | System test | Verify | |
 | 9 | Acceptance test | Verify | the user's help is needed most here |
 
-- **Designer** writes sub-requirements, says how each will be verified, and finds the technology and limits that apply to the build. During the loop it inspects the lower levels of existing requirements, refines existing Actors and Use Cases and adds new ones. New obligations are `Draft rev 1` (see `requirement-decomposition`); existing approved text is revised, never edited in place. It has no helper agents.
-- **Build** delivers. It decides itself whether to split work into packages and spawn its own helpers. The unit tests must pass before delivery. An **Independent reviewer** then examines the result with fresh context: it receives the exact requirement revisions and the artifact or diff, not the author's reasoning, and reviews in the form the artifact needs (code review for code, CAD review for CAD, and so on). It is read-only, its findings go to Build, Build fixes them, and Verify is told. Build may not mark its own work reviewed.
-- **Verify** is the right side of the V. It reviews requirements independently, produces test cases for them and links them to users, Actors and Use Cases, end to end. It runs ready tests per maturity level and runs the Use Cases, including with test equipment, simulators and people. What is built may be firmware, an electronic board, a mechanical part or only a geometry; Verify manages that equipment and interaction. It records, per level, what passed, what failed and what could not be verified. It has no helper agents.
-- Do not add other helper agents by default. The Independent reviewer is the only mandatory one.
+Role contracts: `roles/designer.md`, `roles/build.md`, `roles/verify.md`. Designer and Verify have no helper agents. Build decides itself whether to split work and spawn helpers, and always runs the **Independent reviewer** (defined in `roles/build.md`). No other helper agents by default.
 
 Maturity levels come from the project's own process definition. This skill invents none.
 
@@ -84,13 +83,11 @@ The loop stops by itself in **two** cases and goes to the user:
 
 There are no iteration caps. The user may also stop at any moment ("that is enough"). Then the Orchestrator stops dispatching, tells running roles to stop where the host allows, records open work truthfully per level and per record, leaves Drafts as Drafts, approves and freezes nothing further, and reports the state. Do not promise work after the reply.
 
-## Delegation
+## Delegation and existing systems
 
-Pass each role a packet as `work-orchestration` describes (and `schema/delegation-packet.schema.json` where useful): task id, product and scope, exact requirement IDs and revisions, baseline, objective and exclusions, recorded decisions, allowed tools and ownership, return format. A subagent may not have this skill's text, so copy the relevant rules into the packet. A packet is a brief, not a permission. Re-read live revisions and the baseline when a role returns; a changed revision is an impact-analysis trigger, not something to merge blindly.
+A role's packet follows `work-orchestration` (and `schema/delegation-packet.schema.json` where useful) and adds the role's file from `roles/` and the names of the skills it should load, because a subagent does not inherit this skill's text. A packet is a brief, not a permission. Re-read live revisions and the baseline when a role returns; a changed revision is an impact-analysis trigger, not something to merge blindly.
 
-## Existing systems
-
-Build against the existing baseline and leave it untouched: new obligations are Drafts, revised ones advance their revision and their tests go stale, old PASS results stay history for the old revision, and the changes become a successor baseline through the normal process. Look for existing records the goal extends before creating new ones.
+On an existing system, build against the existing baseline and leave it untouched: new obligations are Drafts, revised ones advance their revision and their tests go stale, old PASS results stay history for the old revision, and the changes become a successor baseline through the normal process.
 
 ## Report
 
