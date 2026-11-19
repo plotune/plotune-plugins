@@ -37,6 +37,7 @@ from pathlib import Path
 
 LIMIT_KEYS = ("calls", "tokens", "cost")
 USAGE_KEYS = ("tokens_in", "tokens_out", "cost")
+OVER_BUDGET_MODES = ("reject", "warn")
 
 
 def _check_limits(value, where):
@@ -76,6 +77,8 @@ def load_config(path):
         usage = entry.get("usage", {})
         if not isinstance(usage, dict) or not set(usage) <= set(USAGE_KEYS):
             raise ValueError(f"entry {entry['id']}: usage keys must be among {USAGE_KEYS}")
+    if cfg.get("over_budget", "reject") not in OVER_BUDGET_MODES:
+        raise ValueError(f"over_budget must be one of {OVER_BUDGET_MODES}")
     _check_limits(cfg.get("budget"), "budget")
     for role, limits in (cfg.get("role_budget") or {}).items():
         _check_limits(limits, f"role_budget.{role}")
@@ -170,11 +173,16 @@ def _budget_reason(cfg, rows, role):
 def check_budget(cfg, role):
     """Ask whether a call by this role would be within budget. Writes nothing."""
     reason = _budget_reason(cfg, _read_ledger(cfg), role)
-    return {"status": "no_budget", "reason": reason} if reason else {"status": "ok"}
+    if not reason:
+        return {"status": "ok"}
+    if cfg.get("over_budget", "reject") == "warn":
+        return {"status": "warn", "reason": reason}
+    return {"status": "no_budget", "reason": reason}
 
 
 def record_call(cfg, role, task, model=None, effort=None, runtime=None, tokens_in=None,
-                tokens_out=None, cost=None, source="self_reported", status="ok"):
+                tokens_out=None, cost=None, source="self_reported", status="ok",
+                usage_source=None, duration_s=0, extra=None):
     """Add a row for an AI call this wrapper did not run, such as a host's own subagent.
 
     The row says where its numbers came from. Whoever calls this reports; nothing here
@@ -184,11 +192,15 @@ def record_call(cfg, role, task, model=None, effort=None, runtime=None, tokens_i
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "role": role, "task": task, "entry": "host-subagent",
         "runtime": runtime, "model": model, "effort": effort,
-        "status": status, "exit_code": None, "duration_s": 0,
+        "status": status, "exit_code": None, "duration_s": duration_s,
         "tokens_in": tokens_in, "tokens_out": tokens_out, "cost": cost,
-        "usage_source": source if any(v is not None for v in numbers) else "unknown",
+        "usage_source": (usage_source or source) if any(v is not None for v in numbers) else "unknown",
         "source": source,
     }
+    row.update(extra or {})
+    reason = _budget_reason(cfg, _read_ledger(cfg), role)
+    if reason:
+        row["over_budget"] = reason
     _append(cfg, row)
     return {"status": status}
 
@@ -211,7 +223,10 @@ def run_call(cfg, entry_id, role, task, prompt_file):
         "source": "wrapper",
     }
     reason = _budget_reason(cfg, rows, role)
-    if reason:
+    warning = None
+    if reason and cfg.get("over_budget", "reject") == "warn":
+        base["over_budget"] = warning = reason
+    elif reason:
         _append(cfg, dict(base, status="refused", reason=reason, exit_code=None, duration_s=0,
                           tokens_in=None, tokens_out=None, cost=None, usage_source="unknown"))
         return {"status": "no_budget", "reason": reason}
@@ -228,7 +243,10 @@ def run_call(cfg, entry_id, role, task, prompt_file):
     status = "ok" if exit_code == 0 else "failed"
     _append(cfg, dict(base, status=status, exit_code=exit_code, duration_s=duration,
                       usage_source=source, **found))
-    return {"status": status, "exit_code": exit_code, "stdout": stdout, "stderr": stderr}
+    result = {"status": status, "exit_code": exit_code, "stdout": stdout, "stderr": stderr}
+    if warning:
+        result["warning"] = warning
+    return result
 
 
 def summarize(cfg):
@@ -244,6 +262,7 @@ def summarize(cfg):
             "tokens_out": sum(r.get("tokens_out") or 0 for r in ran),
             "cost": sum(r.get("cost") or 0 for r in ran),
             "calls_with_unknown_usage": sum(1 for r in ran if r.get("usage_source") != "reported"),
+            "over_budget_calls": sum(1 for r in ran if r.get("over_budget")),
             "seconds": round(sum(r.get("duration_s") or 0 for r in ran), 3),
         }
 
@@ -293,7 +312,7 @@ def main(argv=None):
         if args.command == "check":
             result = check_budget(cfg, args.role)
             print(json.dumps(result))
-            return 0 if result["status"] == "ok" else 3
+            return 3 if result["status"] == "no_budget" else 0
         if args.command == "record":
             print(json.dumps(record_call(cfg, args.role, args.task, args.model, args.effort, args.runtime,
                                          args.tokens_in, args.tokens_out, args.cost)))

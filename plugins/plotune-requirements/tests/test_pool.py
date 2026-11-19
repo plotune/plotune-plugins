@@ -226,6 +226,37 @@ class PoolTests(unittest.TestCase):
         self.assertEqual(summary["by_source"]["self_reported"]["calls"], 1)
         self.assertEqual(summary["total"]["calls"], 2)
 
+    def test_warn_mode_runs_the_call_and_flags_it(self):
+        cfg = self.config(budget={"calls": 1}, over_budget="warn")
+        self.assertEqual(self.call(cfg)["status"], "ok")
+        second = self.call(cfg)
+        self.assertEqual(second["status"], "ok")
+        self.assertIn("calls", second["warning"])
+        self.assertEqual(self.runs(), 2)
+        self.assertIn("calls", self.ledger()[1]["over_budget"])
+        self.assertNotIn("over_budget", self.ledger()[0])
+
+    def test_check_in_warn_mode_does_not_refuse(self):
+        cfg = self.config(budget={"calls": 0}, over_budget="warn")
+        result = pool.check_budget(pool.load_config(cfg), "build")
+        self.assertEqual(result["status"], "warn")
+        done = subprocess.run([sys.executable, str(ROOT / "scripts" / "pool.py"), "check", "--config", str(cfg),
+                               "--role", "build"], capture_output=True, text=True)
+        self.assertEqual(done.returncode, 0)
+
+    def test_invalid_over_budget_value_is_rejected(self):
+        with self.assertRaises(ValueError):
+            pool.load_config(self.config(over_budget="ignore"))
+
+    def test_use_beyond_budget_is_flagged_even_when_rejecting(self):
+        cfg = pool.load_config(self.config(budget={"calls": 1}))
+        pool.record_call(cfg, "build", "T8")
+        pool.record_call(cfg, "build", "T9")
+        first, second = self.ledger()
+        self.assertNotIn("over_budget", first)
+        self.assertIn("calls", second["over_budget"])
+        self.assertEqual(pool.summarize(cfg)["total"]["over_budget_calls"], 1)
+
     def test_cli_record_and_check(self):
         cfg = self.config(budget={"calls": 1})
         script = [sys.executable, str(ROOT / "scripts" / "pool.py")]
