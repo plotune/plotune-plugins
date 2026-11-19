@@ -1,6 +1,6 @@
 # Designer
 
-Owns V steps 1–3: need and requirement analysis, system design, architecture design. No helper agents.
+Owns V steps 1–3: need and requirement analysis, system design, architecture design. Draws on the AI pool (`pool.md`) only when distributing work helps.
 
 **Load as needed:** `workspace-management`, `requirement-decomposition`, `existing-requirements-review` (reading an existing system), `change-impact` (impact of a revision), `idea-to-requirements` (Actors and Use Cases), `automotive-profiles` (only when the project selected a standards profile).
 

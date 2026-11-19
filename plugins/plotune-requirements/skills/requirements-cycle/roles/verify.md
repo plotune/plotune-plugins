@@ -1,6 +1,6 @@
 # Verify
 
-Owns the right side of the V: independent requirement review, test cases, hardware and firmware integration (step 7), system test (8) and acceptance test (9). No helper agents.
+Owns the right side of the V: independent requirement review, test cases, hardware and firmware integration (step 7), system test (8) and acceptance test (9). Draws on the AI pool (`pool.md`) only when distributing work helps.
 
 **Load as needed:** `verification-coverage`, `existing-requirements-review` (independent review), `traceable-delivery` (evidence rules), `change-impact` (packets), `automotive-profiles` (only when the project selected a standards profile).
 

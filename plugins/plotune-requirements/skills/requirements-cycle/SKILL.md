@@ -29,6 +29,7 @@ Before the first role is spawned, the Orchestrator proposes a short team plan an
 The plan states:
 
 - **Per role** (Designer, Build, Verify and Build's Independent reviewer): the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0; its autonomy (goal only, goal with approach hints, or step list: the more capable the role, the less method it gets); and the escalation it may use (a stronger model or effort) if it keeps blocking for lack of capacity.
+- **AI pool:** the entries (runtime, model, effort, context limit) the roles may draw calls from, and the budget for calls, tokens and cost, overall and per role. These come from the user's pool config; the plugin ships no model names or prices.
 - **Staffing timeline:** when each role is first needed, what it waits on, and when it is released. A role is spawned when its work is due and not before, so nothing sits idle; roles whose work does not depend on each other run in parallel. A role keeps its context only where that helps (the Independent reviewer always starts fresh).
 - **Shared resources** (platform services, simulators and compute, test equipment, devices, people): for each, who uses it and when, how access is arranged (a lock or queue the user designs, or the Orchestrator's own proposal if the user has none), and what it costs in time or money when that is knowable.
 - **The Orchestrator's own plan** for running the loop with those resources, including what it expects to need from the user.
@@ -53,7 +54,7 @@ It owns no V step and authors no requirement text, code or test result, but it i
 | 8 | System test | Verify | |
 | 9 | Acceptance test | Verify | the user's help is needed most here |
 
-Role contracts: `roles/designer.md`, `roles/build.md`, `roles/verify.md`. Designer and Verify have no helper agents. Build decides itself whether to split work and spawn helpers, and always runs the **Independent reviewer** (defined in `roles/build.md`). No other helper agents by default.
+Role contracts: `roles/designer.md`, `roles/build.md`, `roles/verify.md`. Designer, Build and Verify may draw stateless calls from the AI pool when distributing work helps (`roles/pool.md`); none is required to. Build decides itself whether to split its work, and always runs the **Independent reviewer** (defined in `roles/build.md`).
 
 Maturity levels come from the project's own process definition. This skill invents none.
 
@@ -113,6 +114,12 @@ The loop stops by itself in **two** cases and goes to the user:
 2. **Impact outside the scope:** a change touches or is blocked by a record outside the goal's scope, for example an Edge goal that depends on a Cloud requirement. Impact inside scope is handled without asking.
 
 There are no iteration caps. The user may also stop at any moment ("that is enough"). Then the Orchestrator stops dispatching, tells running roles to stop where the host allows, records open work truthfully per level and per record, leaves Drafts as Drafts, approves and freezes nothing further, and reports the state. Do not promise work after the reply.
+
+## AI pool
+
+AI is a resource here, not a staff of sub-roles. A role draws a call from the pool when distributing work helps and is never required to. Every call goes through `scripts/pool.py`, which runs it as a fresh stateless process, checks the budget first and writes the ledger itself. The numbers therefore never come from an agent's own report: at checkpoints the Orchestrator reports usage from the ledger summary (calls, tokens, cost, by entry and role, against the budget) and flags anomalies, so the user can follow the spend without reading every call.
+
+Running out of budget stops nothing. The wrapper refuses the call without running it; the role then does the work itself, or waits if the work really needs the call and the Orchestrator says wait. Usage a runtime does not report is recorded as unknown, never estimated. Details and the config format are in `roles/pool.md`.
 
 ## Delegation and existing systems
 
