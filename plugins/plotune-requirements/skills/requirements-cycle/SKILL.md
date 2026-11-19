@@ -52,14 +52,20 @@ Maturity levels come from the project's own process definition. This skill inven
 | Orchestrator ↔ Designer | goal, scope, decisions; impact outside scope, goal drift |
 | Orchestrator ↔ Verify | blockers, items that need the user (equipment, people) |
 | Designer ↔ Build | sub-requirements and limits down; technology limits and requirement gaps up |
-| Designer ↔ Verify | test planning, independent requirement review, failing-requirement packets |
+| Designer ↔ Verify | acceptance criteria and verification method down; testability findings, test cases for coverage review and failing-requirement packets across |
 | Build ↔ Verify | the deliverable, unit evidence and reviewer result |
 
 Build has no direct line to the Orchestrator; its blockers go to Designer or Verify, who forward them. Subagents never ask the user anything. A subagent that is stuck returns a blocker with its question, and the Orchestrator batches questions to the user.
 
 ## One iteration
 
-1. **Designer** produces the delta: Draft requirements, constraints, impact on existing records. **Verify** plans tests while each requirement is being defined and reviews it independently.
+1. **Designer and Verify exchange, in this order:**
+   1. Designer produces the delta: Draft requirements, each with acceptance criteria and a verification method, plus constraints and impact on existing records.
+   2. Verify reviews each requirement independently for testability. Untestable or ambiguous ones go back to Designer, who revises the Draft.
+   3. Verify writes the test cases while the requirement is being defined and links them to the requirement, Actors and Use Cases.
+   4. Designer checks that those tests cover the Use Case steps and Actor goals, and returns coverage gaps to Verify.
+
+   Designer never writes the tests and Verify never writes the requirements, so each checks work it did not author.
 2. **Orchestrator gate:** transitions within the delegation; a requirement the Designer wrote is approved only after Verify's review.
 3. **Build** delivers against the exact requirement revisions: unit tests pass, Independent reviewer, fixes, hand-off to Verify.
 4. **Verify** runs per level and records PASS, FAIL or NOT VERIFIED with real evidence.
