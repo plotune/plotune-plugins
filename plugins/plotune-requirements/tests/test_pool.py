@@ -186,5 +186,59 @@ class PoolTests(unittest.TestCase):
         self.assertEqual(summary.returncode, 0)
         self.assertEqual(json.loads(summary.stdout)["total"]["calls"], 1)
 
+    def test_wrapper_rows_are_marked_as_measured(self):
+        self.call(self.config())
+        (line,) = self.ledger()
+        self.assertEqual(line["source"], "wrapper")
+
+    def test_record_adds_a_self_reported_row(self):
+        cfg = pool.load_config(self.config())
+        pool.record_call(cfg, "build", "T4", model="model-b", effort="high", tokens_in=100, tokens_out=40)
+        (line,) = self.ledger()
+        self.assertEqual((line["source"], line["usage_source"], line["status"]), ("self_reported", "self_reported", "ok"))
+        self.assertEqual((line["role"], line["model"], line["tokens_in"], line["tokens_out"]), ("build", "model-b", 100, 40))
+        self.assertIsNone(line["cost"])
+
+    def test_record_without_numbers_is_unknown(self):
+        pool.record_call(pool.load_config(self.config()), "build", "T4")
+        (line,) = self.ledger()
+        self.assertEqual(line["usage_source"], "unknown")
+
+    def test_recorded_calls_count_toward_the_budget(self):
+        cfg = self.config(budget={"calls": 1})
+        pool.record_call(pool.load_config(cfg), "build", "T4")
+        self.assertEqual(self.call(cfg)["status"], "no_budget")
+
+    def test_check_reports_budget_and_writes_nothing(self):
+        cfg = self.config(budget={"calls": 1})
+        loaded = pool.load_config(cfg)
+        self.assertEqual(pool.check_budget(loaded, "verify")["status"], "ok")
+        pool.record_call(loaded, "verify", "T5")
+        self.assertEqual(pool.check_budget(loaded, "verify")["status"], "no_budget")
+        self.assertEqual(len(self.ledger()), 1)
+
+    def test_summary_keeps_measured_and_self_reported_apart(self):
+        cfg = self.config()
+        self.call(cfg)
+        pool.record_call(pool.load_config(cfg), "build", "T6", tokens_in=1, tokens_out=1)
+        summary = pool.summarize(pool.load_config(cfg))
+        self.assertEqual(summary["by_source"]["wrapper"]["calls"], 1)
+        self.assertEqual(summary["by_source"]["self_reported"]["calls"], 1)
+        self.assertEqual(summary["total"]["calls"], 2)
+
+    def test_cli_record_and_check(self):
+        cfg = self.config(budget={"calls": 1})
+        script = [sys.executable, str(ROOT / "scripts" / "pool.py")]
+        ok = subprocess.run(script + ["check", "--config", str(cfg), "--role", "build"], capture_output=True, text=True)
+        self.assertEqual(ok.returncode, 0)
+        rec = subprocess.run(script + ["record", "--config", str(cfg), "--role", "build", "--task", "T7",
+                                       "--model", "model-c", "--tokens-in", "5", "--tokens-out", "2"],
+                             capture_output=True, text=True)
+        self.assertEqual(rec.returncode, 0, rec.stderr)
+        full = subprocess.run(script + ["check", "--config", str(cfg), "--role", "build"], capture_output=True, text=True)
+        self.assertEqual(full.returncode, 3)
+        self.assertEqual(json.loads(full.stdout)["status"], "no_budget")
+
+
 if __name__ == "__main__":
     unittest.main()

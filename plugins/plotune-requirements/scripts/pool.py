@@ -14,10 +14,17 @@ Config (JSON, owned by the user):
 Command arguments may contain {prompt_file}, {model} and {effort}. usage maps tokens_in,
 tokens_out and cost to dotted paths in the JSON the runtime prints.
 
+Calls the wrapper did not run, such as a host's own subagents, are covered too: `check`
+asks whether a role is within budget, and `record` adds a row labelled self_reported.
+Rows carry `source` (wrapper, self_reported, or a host hook), so measured and reported
+numbers stay apart in the summary.
+
 Usage:
     python scripts/pool.py run --config C --entry E --role R --task T --prompt-file P
+    python scripts/pool.py check --config C --role R
+    python scripts/pool.py record --config C --role R --task T [--model M --tokens-in N ...]
     python scripts/pool.py summary --config C
-Exit codes for run: 0 ok, 1 the call failed, 2 bad input, 3 refused for budget.
+Exit codes for run and check: 0 ok, 1 the call failed, 2 bad input, 3 over budget.
 """
 import argparse
 import hashlib
@@ -150,6 +157,42 @@ def _usage(entry, stdout):
     return found, ("reported" if any(v is not None for v in found.values()) else "unknown")
 
 
+def _budget_reason(cfg, rows, role):
+    reason = _exceeded(cfg.get("budget") or {}, _used(rows))
+    if reason is None:
+        role_limits = (cfg.get("role_budget") or {}).get(role) or {}
+        reason = _exceeded(role_limits, _used([r for r in rows if r.get("role") == role]))
+        if reason:
+            reason = f"role {role}: " + reason
+    return reason
+
+
+def check_budget(cfg, role):
+    """Ask whether a call by this role would be within budget. Writes nothing."""
+    reason = _budget_reason(cfg, _read_ledger(cfg), role)
+    return {"status": "no_budget", "reason": reason} if reason else {"status": "ok"}
+
+
+def record_call(cfg, role, task, model=None, effort=None, runtime=None, tokens_in=None,
+                tokens_out=None, cost=None, source="self_reported", status="ok"):
+    """Add a row for an AI call this wrapper did not run, such as a host's own subagent.
+
+    The row says where its numbers came from. Whoever calls this reports; nothing here
+    can verify the numbers, so the ledger labels them rather than trusting them."""
+    numbers = (tokens_in, tokens_out, cost)
+    row = {
+        "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "role": role, "task": task, "entry": "host-subagent",
+        "runtime": runtime, "model": model, "effort": effort,
+        "status": status, "exit_code": None, "duration_s": 0,
+        "tokens_in": tokens_in, "tokens_out": tokens_out, "cost": cost,
+        "usage_source": source if any(v is not None for v in numbers) else "unknown",
+        "source": source,
+    }
+    _append(cfg, row)
+    return {"status": status}
+
+
 def run_call(cfg, entry_id, role, task, prompt_file):
     entry = next((e for e in cfg["entries"] if e["id"] == entry_id), None)
     if entry is None:
@@ -165,13 +208,9 @@ def run_call(cfg, entry_id, role, task, prompt_file):
         "role": role, "task": task, "entry": entry_id,
         "runtime": entry.get("runtime"), "model": entry.get("model"), "effort": entry.get("effort"),
         "prompt_sha256": hashlib.sha256(prompt_bytes).hexdigest(),
+        "source": "wrapper",
     }
-    reason = _exceeded(cfg.get("budget") or {}, _used(rows))
-    if reason is None:
-        role_limits = (cfg.get("role_budget") or {}).get(role) or {}
-        reason = _exceeded(role_limits, _used([r for r in rows if r.get("role") == role]))
-        if reason:
-            reason = f"role {role}: " + reason
+    reason = _budget_reason(cfg, rows, role)
     if reason:
         _append(cfg, dict(base, status="refused", reason=reason, exit_code=None, duration_s=0,
                           tokens_in=None, tokens_out=None, cost=None, usage_source="unknown"))
@@ -208,7 +247,9 @@ def summarize(cfg):
             "seconds": round(sum(r.get("duration_s") or 0 for r in ran), 3),
         }
 
-    out = {"total": bucket(rows), "by_entry": {}, "by_role": {}, "budget": {}}
+    out = {"total": bucket(rows), "by_entry": {}, "by_role": {}, "by_source": {}, "budget": {}}
+    for key in sorted({r.get("source") for r in rows if r.get("source")}):
+        out["by_source"][key] = bucket([r for r in rows if r.get("source") == key])
     for key in sorted({r.get("entry") for r in rows if r.get("entry")}):
         out["by_entry"][key] = bucket([r for r in rows if r.get("entry") == key])
     for key in sorted({r.get("role") for r in rows if r.get("role")}):
@@ -230,11 +271,32 @@ def main(argv=None):
     run.add_argument("--prompt-file", required=True)
     summary = sub.add_parser("summary")
     summary.add_argument("--config", required=True)
+    check = sub.add_parser("check", help="ask whether a call by this role is within budget; exit 3 if not")
+    check.add_argument("--config", required=True)
+    check.add_argument("--role", required=True)
+    record = sub.add_parser("record", help="record a call this wrapper did not run (self-reported)")
+    record.add_argument("--config", required=True)
+    record.add_argument("--role", required=True)
+    record.add_argument("--task", required=True)
+    record.add_argument("--model")
+    record.add_argument("--effort")
+    record.add_argument("--runtime")
+    record.add_argument("--tokens-in", type=int)
+    record.add_argument("--tokens-out", type=int)
+    record.add_argument("--cost", type=float)
     args = parser.parse_args(argv)
     try:
         cfg = load_config(args.config)
         if args.command == "summary":
             print(json.dumps(summarize(cfg), indent=2))
+            return 0
+        if args.command == "check":
+            result = check_budget(cfg, args.role)
+            print(json.dumps(result))
+            return 0 if result["status"] == "ok" else 3
+        if args.command == "record":
+            print(json.dumps(record_call(cfg, args.role, args.task, args.model, args.effort, args.runtime,
+                                         args.tokens_in, args.tokens_out, args.cost)))
             return 0
         result = run_call(cfg, args.entry, args.role, args.task, args.prompt_file)
     except ValueError as exc:

@@ -5,6 +5,8 @@ AI as a resource that Designer, Build and Verify can call when distributing work
 - **Stateless.** Each call is a fresh process that sees only the prompt file it is given and the sources the prompt points to. No earlier context carries over, which also makes a pool call a natural fit for the Independent reviewer.
 - **Metered by the wrapper, not by the agent.** Calls go through `scripts/pool.py`. It checks the budget, runs the call, and appends the call to the ledger itself: role, task, runtime, model, effort, tokens, cost, time and status. Prompts are not stored, only their hash.
 - **Honest about gaps.** If a runtime does not report tokens or cost, the ledger says `unknown`; nothing is estimated. Token and cost budgets only count what was reported, so for a runtime that reports nothing, the call budget is the only one that applies.
+- **Covers a host's own subagents too, on any host.** Once a pool is defined, a role does not call the host's subagent tool unnoticed: it asks `pool.py check` first (no budget means it does the work itself) and, unless a host hook meters the call, adds a `pool.py record` row afterwards. Using the tool is allowed; it just counts.
+- **Provenance is labelled.** Each row has a `source`: `wrapper` (measured by `pool.py run`), a host-hook name (measured by that host), or `self_reported` (written by an agent, unverifiable). `summary` keeps them apart. A host without hooks cannot enforce `check` and `record`; for such a host they rest on the roles following the rule, so prefer `pool.py run` there.
 - **Over budget is not a stop.** The wrapper refuses the call without running it and returns `no_budget`. The role then does the work itself. If the work really needs the call and the Orchestrator says wait, the role waits.
 
 ## Config
@@ -36,7 +38,9 @@ A JSON file the user owns (kept outside the plugin). No model names or prices sh
 
 ```
 python scripts/pool.py run --config ai-pool.json --entry fast --role designer --task T1 --prompt-file prompt.md
+python scripts/pool.py check --config ai-pool.json --role designer
+python scripts/pool.py record --config ai-pool.json --role designer --task T1 --model model-a --tokens-in 1200 --tokens-out 300
 python scripts/pool.py summary --config ai-pool.json
 ```
 
-`run` exits 0 on success, 1 if the call failed, 2 on bad input, 3 when refused for budget. `summary` totals the ledger by entry and role against the budget; the Orchestrator reports from it.
+`run` and `check` exit 0 on success, 3 when over budget (`run` also 1 if the call failed, 2 on bad input). `record` adds a self-reported row for a call the wrapper did not run; its numbers are optional and unlabelled numbers are never invented. `summary` totals the ledger by entry, role and source against the budget; the Orchestrator reports from it.
