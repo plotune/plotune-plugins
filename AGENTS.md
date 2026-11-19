@@ -10,7 +10,7 @@ A monorepo marketplace for Plotune plugins, packaged for Claude Code, Codex, Ope
 python tools/bump_version.py <plugin> <new-version> --note "what changed"
 ```
 
-That one command updates `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `package.json`, the version table in `README.md` and `CHANGELOG.md`. Do not edit versions by hand. Changes to a plugin's `CHANGELOG.md`, `README.md`, `tests/` and `evals/` alone do not need a bump. Merging to `main` is the release: `.github/workflows/release.yml` tags `<plugin>--v<version>` and publishes a GitHub Release.
+That one command updates `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `package.json`, the version table in `README.md` and `CHANGELOG.md`. Do not edit versions by hand. Changes to a plugin's `CHANGELOG.md`, `README.md`, `tests/` and `evals/` alone do not need a bump. There is no CI/CD in this repo: merging to `main` with a higher version is the release for Claude Code, and nobody tags or publishes GitHub Releases automatically. Run the checks above by hand.
 
 ## Before you finish, run
 
