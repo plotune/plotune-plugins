@@ -28,12 +28,12 @@ Before the first role is spawned, the Orchestrator proposes a short team plan an
 
 The plan states:
 
-- **Per role** (Designer, Build, Verify and Build's Independent reviewer): the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0.
+- **Per role** (Designer, Build, Verify and Build's Independent reviewer): the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0; and the escalation it may use (a stronger model or effort) if it keeps blocking for lack of capacity.
 - **Staffing timeline:** when each role is first needed, what it waits on, and when it is released. A role is spawned when its work is due and not before, so nothing sits idle; roles whose work does not depend on each other run in parallel. A role keeps its context only where that helps (the Independent reviewer always starts fresh).
 - **Shared resources** (platform services, simulators and compute, test equipment, devices, people): for each, who uses it and when, how access is arranged (a lock or queue the user designs, or the Orchestrator's own proposal if the user has none), and what it costs in time or money when that is knowable.
 - **The Orchestrator's own plan** for running the loop with those resources, including what it expects to need from the user.
 
-There are no fixed rules for models, effort or resources: the user does not have to name models. The Orchestrator plans the whole process itself, choosing from the models the host can really launch according to what each role's work needs, and the user approves or changes the result. If the user names a model the host cannot launch, say so and ask for another instead of substituting silently. If the host cannot choose models per role, say so and ask what to do. Record the approved plan with the goal, and put each role's model, permissions and resource access into its packet; give a role only the access it needs. Ask again before widening any authority or changing a role's model; scheduling inside the approved plan needs no new approval.
+There are no fixed rules for models, effort or resources: the user does not have to name models. The Orchestrator plans the whole process itself, choosing from the models the host can really launch according to what each role's work needs, and the user approves or changes the result. If the user names a model the host cannot launch, say so and ask for another instead of substituting silently. If the host cannot choose models per role, say so and ask what to do. Record the approved plan with the goal, and put each role's model, permissions and resource access into its packet; give a role only the access it needs. Ask again before widening any authority or moving a role's model beyond its approved escalation allowance; scheduling and escalation inside the approved plan need no new approval.
 
 ## The Orchestrator
 
@@ -87,6 +87,23 @@ Build has no direct line to the Orchestrator; its blockers go to Designer or Ver
 ## Progress is per level, not per goal
 
 A blocker stops only what depends on it. If L2 tests can run and an L4 environment is not ready, L2 runs and L4 is recorded NOT VERIFIED with the missing precondition. Plan the dependencies explicitly and wait only on real ones. If the missing thing will arrive on a schedule or trigger that exists, record that condition; otherwise list it as open work for the user. Never claim PASS without evidence, and the owner of a level writes that level's PASS.
+
+## Blockers
+
+Roles return a blocker in a fixed form: what was tried, exactly what is needed, the role's own classification, and what it can continue with meanwhile. A blocker that says nothing was tried goes back once with a pointer to where to look.
+
+The Orchestrator triages in this order and reaches the user last:
+
+1. The answer is already in the workspace, the code or the equipment notes: answer it.
+2. It belongs to another role: route it along the lines above.
+3. A reversible, low-impact detail: pick the safe default, record the assumption, continue.
+4. The role lacks the capacity for the task: split the task narrower, or raise the role as far as the plan's escalation allowance goes.
+5. A missing resource or environment: that level is NOT VERIFIED with the condition recorded.
+6. A real decision, or impact outside the scope: the user.
+
+Keep a blocker ledger with the role, kind, what it blocks and status; merge duplicates; blockers never stop independent work. Bring the open ones to the user together at checkpoints, ordered by what each unblocks and each with a recommended default.
+
+A blocker that returns in the same form after being answered means the answer did not help or the role does not fit the task. Re-plan the role (narrower task, stronger model within the allowance) instead of asking the user again. This is a re-plan trigger, not a stop condition. To prevent blockers, put what a role usually needs in its packet (where the sources are, commands, equipment access) and give smaller models narrower tasks.
 
 ## Stopping
 
