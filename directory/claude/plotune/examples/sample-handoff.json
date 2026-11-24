@@ -1,0 +1,49 @@
+{
+  "packet_version": "1.0",
+  "task_id": "TASK-SAMPLE-001",
+  "session_run_id": "SESSION-SAMPLE-01",
+  "workspace_id": "demo-workspace",
+  "product_id": "DEMO-OBC",
+  "objective": "Review the implementation of a previously authorized charging-status interface",
+  "scope": [
+    {
+      "requirement_id": "DEMO-OBC-001",
+      "revision": 2,
+      "baseline_id": "DEMO-BASE-001"
+    }
+  ],
+  "skill_paths": [
+    "skills/work-orchestration/SKILL.md",
+    "skills/traceable-delivery/SKILL.md"
+  ],
+  "guide_reference": "Read the user-owned workspace Guide before changing anything",
+  "source_artifacts": [
+    "Frozen baseline DEMO-BASE-001; exact revision snapshot"
+  ],
+  "known_decisions": [
+    "Only the previously authorized interface behavior is in scope"
+  ],
+  "assumptions": [],
+  "dependencies": [],
+  "exclusions": [
+    "No safety qualification, baseline freeze, merging, or release"
+  ],
+  "deliverables": [
+    "Implementation review with actual file and test references"
+  ],
+  "permissions": {
+    "actions": [
+      "analyze",
+      "test"
+    ],
+    "owned_records": [],
+    "owned_paths": [],
+    "owner_authorization_ref": "User approval must be verified in the real workspace"
+  },
+  "return_contract": [
+    "Work actually performed",
+    "Requirement IDs and revisions",
+    "Test methods/results/evidence",
+    "Conflicts and blocked work"
+  ]
+}

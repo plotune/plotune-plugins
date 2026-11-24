@@ -1,0 +1,492 @@
+{
+  "schema_name": "plotune-requirements-portable",
+  "schema_version": "1.1.0",
+  "description": "Blank portable records, not a copy of any organization workspace",
+  "tables": {
+    "products": {
+      "columns": [
+        "product_id",
+        "product_name",
+        "parent_id",
+        "type",
+        "scope",
+        "repository_url"
+      ],
+      "primary_key": [
+        "product_id"
+      ],
+      "sheet_name": "Products"
+    },
+    "stakeholder_needs": {
+      "columns": [
+        "need_id",
+        "product_id",
+        "statement",
+        "stakeholder",
+        "source_url",
+        "status",
+        "rationale",
+        "updated_at_utc"
+      ],
+      "primary_key": [
+        "need_id"
+      ],
+      "sheet_name": "Stakeholder Needs"
+    },
+    "actors": {
+      "columns": [
+        "actor_id",
+        "product_id",
+        "name",
+        "actor_type",
+        "purpose",
+        "system_boundary_context",
+        "status",
+        "source_url",
+        "updated_at_utc",
+        "notes"
+      ],
+      "primary_key": [
+        "actor_id"
+      ],
+      "sheet_name": "Actors"
+    },
+    "use_cases": {
+      "columns": [
+        "use_case_id",
+        "product_id",
+        "title",
+        "goal",
+        "operational_context",
+        "trigger",
+        "preconditions",
+        "main_flow",
+        "alternates_failure",
+        "status",
+        "updated_at_utc",
+        "notes"
+      ],
+      "primary_key": [
+        "use_case_id"
+      ],
+      "sheet_name": "Use Cases"
+    },
+    "requirements": {
+      "columns": [
+        "requirement_id",
+        "product_id",
+        "category",
+        "requirement",
+        "rationale",
+        "acceptance_criteria",
+        "lifecycle_status",
+        "revision",
+        "source_url",
+        "updated_at_utc",
+        "updated_by",
+        "parent_requirement_ids",
+        "hierarchy_level",
+        "notes"
+      ],
+      "primary_key": [
+        "requirement_id"
+      ],
+      "sheet_name": "Requirements"
+    },
+    "requirement_revisions": {
+      "columns": [
+        "requirement_id",
+        "revision",
+        "requirement_snapshot",
+        "acceptance_criteria_snapshot",
+        "changed_at_utc",
+        "changed_by",
+        "reason"
+      ],
+      "primary_key": [
+        "requirement_id",
+        "revision"
+      ],
+      "sheet_name": "Requirement Revisions"
+    },
+    "applicability": {
+      "columns": [
+        "requirement_id",
+        "product_id",
+        "notes"
+      ],
+      "primary_key": [
+        "requirement_id",
+        "product_id"
+      ],
+      "sheet_name": "Applicability"
+    },
+    "traceability": {
+      "columns": [
+        "from_type",
+        "from_id",
+        "relation",
+        "to_type",
+        "to_id",
+        "notes"
+      ],
+      "primary_key": [],
+      "sheet_name": "Traceability"
+    },
+    "verification": {
+      "columns": [
+        "verification_id",
+        "requirement_id",
+        "requirement_revision",
+        "product_id",
+        "stage",
+        "method",
+        "result",
+        "evidence_url",
+        "evidence_summary",
+        "provenance",
+        "verified_at_utc",
+        "verified_by",
+        "notes"
+      ],
+      "primary_key": [
+        "verification_id"
+      ],
+      "sheet_name": "Verification"
+    },
+    "baselines": {
+      "columns": [
+        "baseline_id",
+        "product_id",
+        "product_version",
+        "status",
+        "frozen_at_utc",
+        "approved_by",
+        "snapshot_url",
+        "notes"
+      ],
+      "primary_key": [
+        "baseline_id"
+      ],
+      "sheet_name": "Baselines"
+    },
+    "baseline_items": {
+      "columns": [
+        "baseline_id",
+        "requirement_id",
+        "requirement_revision",
+        "requirement_snapshot",
+        "acceptance_criteria_snapshot",
+        "notes"
+      ],
+      "primary_key": [
+        "baseline_id",
+        "requirement_id"
+      ],
+      "sheet_name": "Baseline Items"
+    },
+    "verification_runs": {
+      "columns": [
+        "execution_id",
+        "verification_id",
+        "requirement_id",
+        "requirement_revision",
+        "product_id",
+        "maturity_level",
+        "maturity_name",
+        "result",
+        "coverage",
+        "evidence_url",
+        "evidence_summary",
+        "setup_tools",
+        "tested_at_utc",
+        "tested_by",
+        "notes"
+      ],
+      "primary_key": [
+        "execution_id"
+      ],
+      "sheet_name": "Verification Runs"
+    },
+    "test_cases": {
+      "columns": [
+        "test_case_id",
+        "verification_id",
+        "requirement_id",
+        "requirement_revision",
+        "product_id",
+        "title",
+        "method",
+        "min_level",
+        "target_level",
+        "applicable_levels",
+        "mandatory",
+        "procedure",
+        "status",
+        "baseline_id",
+        "notes"
+      ],
+      "primary_key": [
+        "test_case_id"
+      ],
+      "sheet_name": "Test Cases"
+    },
+    "test_executions": {
+      "columns": [
+        "execution_id",
+        "test_case_id",
+        "requirement_id",
+        "requirement_revision",
+        "product_id",
+        "maturity_level",
+        "maturity_name",
+        "result",
+        "coverage",
+        "evidence_url",
+        "evidence_summary",
+        "setup_tools",
+        "tested_at_utc",
+        "tested_by",
+        "build_commit",
+        "notes"
+      ],
+      "primary_key": [
+        "execution_id"
+      ],
+      "sheet_name": "Test Executions"
+    },
+    "tasks": {
+      "columns": [
+        "task_id",
+        "project_id",
+        "goal",
+        "lead_agent",
+        "session_run_id",
+        "status",
+        "deliverable_url",
+        "blocker",
+        "created_at_utc",
+        "updated_at_utc",
+        "completed_at_utc",
+        "requirement_ids"
+      ],
+      "primary_key": [
+        "task_id"
+      ],
+      "sheet_name": "Tasks"
+    },
+    "audit_log": {
+      "columns": [
+        "timestamp_utc",
+        "event_id",
+        "actor_type",
+        "actor_id",
+        "model",
+        "entity",
+        "record_id",
+        "action",
+        "field",
+        "old_value",
+        "new_value",
+        "reason_evidence_url"
+      ],
+      "primary_key": [
+        "event_id"
+      ],
+      "sheet_name": "Audit Log"
+    },
+    "decisions": {
+      "columns": [
+        "decision_id",
+        "product_id",
+        "topic",
+        "decision",
+        "status",
+        "rationale",
+        "source_url",
+        "decided_by",
+        "decided_at_utc",
+        "notes"
+      ],
+      "primary_key": [
+        "decision_id"
+      ],
+      "sheet_name": "Decisions"
+    },
+    "review_findings": {
+      "columns": [
+        "finding_id",
+        "product_id",
+        "record_type",
+        "record_id",
+        "record_revision",
+        "check_id",
+        "title",
+        "description",
+        "evidence_url",
+        "severity",
+        "confidence",
+        "recommendation",
+        "standard_profile_id",
+        "status",
+        "owner",
+        "change_request_id",
+        "created_at_utc",
+        "updated_at_utc",
+        "closed_at_utc",
+        "resolution_notes"
+      ],
+      "primary_key": [
+        "finding_id"
+      ],
+      "sheet_name": "Review Findings"
+    },
+    "change_requests": {
+      "columns": [
+        "change_id",
+        "product_id",
+        "title",
+        "reason",
+        "source_url",
+        "requester",
+        "baseline_id",
+        "impact_summary",
+        "safety_impact",
+        "verification_impact",
+        "proposed_change",
+        "status",
+        "owner",
+        "decision",
+        "decision_by",
+        "decided_at_utc",
+        "created_at_utc",
+        "updated_at_utc",
+        "implemented_at_utc",
+        "closed_at_utc",
+        "evidence_url"
+      ],
+      "primary_key": [
+        "change_id"
+      ],
+      "sheet_name": "Change Requests"
+    },
+    "change_impacts": {
+      "columns": [
+        "impact_id",
+        "change_id",
+        "target_type",
+        "target_id",
+        "target_revision",
+        "impact_kind",
+        "rationale",
+        "evidence_url",
+        "disposition",
+        "owner",
+        "updated_at_utc"
+      ],
+      "primary_key": [
+        "impact_id"
+      ],
+      "sheet_name": "Change Impacts"
+    },
+    "standards_profiles": {
+      "columns": [
+        "profile_id",
+        "product_id",
+        "standard",
+        "edition",
+        "scope",
+        "tailoring",
+        "reference_url",
+        "status",
+        "reviewer",
+        "reviewed_at_utc",
+        "notes"
+      ],
+      "primary_key": [
+        "profile_id"
+      ],
+      "sheet_name": "Standards Profiles"
+    }
+  },
+  "enums": {
+    "requirement_lifecycle_status": [
+      "Draft",
+      "In Review",
+      "Approved",
+      "Rejected",
+      "Superseded",
+      "Retired"
+    ],
+    "baseline_status": [
+      "Draft",
+      "Frozen",
+      "Superseded"
+    ],
+    "verification_result": [
+      "PASS",
+      "FAIL",
+      "NOT VERIFIED",
+      "BLOCKED"
+    ],
+    "task_status": [
+      "Backlog",
+      "Running",
+      "Blocked",
+      "Review",
+      "Done",
+      "Cancelled"
+    ],
+    "finding_status": [
+      "Open",
+      "Under Review",
+      "Accepted",
+      "Rejected",
+      "Resolved",
+      "Closed"
+    ],
+    "finding_severity": [
+      "Critical",
+      "Major",
+      "Minor",
+      "Observation"
+    ],
+    "change_status": [
+      "Proposed",
+      "Under Analysis",
+      "Awaiting Decision",
+      "Approved",
+      "Rejected",
+      "Implementing",
+      "Verification Pending",
+      "Closed",
+      "Cancelled"
+    ],
+    "change_impact_disposition": [
+      "Open",
+      "No Change",
+      "Revise",
+      "Add",
+      "Retest",
+      "Deferred",
+      "Closed"
+    ],
+    "standard_profile_status": [
+      "Proposed",
+      "Active",
+      "Inactive",
+      "Retired"
+    ]
+  },
+  "relationships": {
+    "requirement_hierarchy": "parent_requirement_ids is a comma-separated ordered set of existing requirement IDs, allowing zero or more parents; requires DAG/no self links; hierarchy_level derived/read-only",
+    "traceability": "typed references between records, or explicitly external artifacts; unrelated to hierarchical parent edges",
+    "baseline_items": "immutable exact requirement revision plus text and acceptance snapshot after freeze",
+    "verification": "requires exact requirement revision and actual evidence for PASS",
+    "maturity": "workspace-owned optional definitions; do not assume an official L1-L6 scale",
+    "review_findings": "finding links to real record ID/revision with evidence; records are proposals until reviewed; Closed requires disposition and rationale",
+    "change_requests": "change requests track owner and decision separately from implementation/verification; approval cannot be inferred from change status",
+    "change_impacts": "many impacted records per change request, typed target IDs with exact requirement revision when applicable; closures require disposition and evidence",
+    "standards_profiles": "user-owned per-product standard edition, scope, reviewer and tailoring; none are automatically active or compliance certifications"
+  }
+}

@@ -22,6 +22,7 @@ python tools/check_mcp_urls.py --offline
 python tools/sync_opencode.py --check
 python tools/sync_bundles.py --check      # bundled copies in plugins/plotune match their source
 python tools/check_gateway_tools.py       # skills in plugins/plotune name only gateway tools
+python tools/build_claude_directory.py --check   # directory/claude/plotune matches plugins/plotune
 python -I -m unittest discover -s tools/tests
 node --test tools/tests/opencode-adapter.test.mjs
 python tools/package_openai.py plotune    # builds dist/ (gitignored) and validates the OpenAI ZIP
@@ -40,6 +41,7 @@ claude plugin validate .
 | `plugins/<n>/index.js` | OpenCode adapter | **no**: generated from `tools/opencode-adapter.js` by `tools/sync_opencode.py` |
 | `.claude-plugin/`, `.agents/plugins/`, `.cursor-plugin/` `marketplace.json` | catalogs (Claude+Copilot / Codex / Cursor) | yes; Claude entries never carry `version` |
 | `plugins/plotune/{skills/<13 requirements skills>,scripts,schema,templates,migrations,docs,examples,hooks}` | copies of `plugins/plotune-requirements`, declared in `tools/bundles.json` | **no**: edit the source, then `python tools/sync_bundles.py` |
+| `directory/claude/plotune/` | the Claude directory edition of `plotune` (what the directory submission points at): only Markdown, JSON and PNG, no hooks, scripts or package files | **no**: `python tools/build_claude_directory.py` (also after every `plotune` change or version bump) |
 | `plugins/plotune/references/gateway-tools.json` | gateway tool names, generated from the monorepo catalog | **no**: `python tools/generate_gateway_tools.py <monorepo>/packages/contracts/mcp-catalog` |
 | `tools/` | repo tooling and its tests | yes, test-first |
 
