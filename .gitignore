@@ -2,3 +2,4 @@ rms.zip
 .superpowers/
 __pycache__/
 plugins/*/evals/results/
+dist/

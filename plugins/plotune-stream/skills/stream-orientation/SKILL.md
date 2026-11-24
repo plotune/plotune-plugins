@@ -1,11 +1,11 @@
 ---
 name: stream-orientation
-description: Use before querying or changing anything through the Plotune Stream MCP (stream.plotune.net) - event history, dashboards, insights, funnels, retention, webhooks or the event catalog. Covers choosing the project, discovering events first, bounded and credit-aware queries, and which tools need user confirmation.
+description: Use before querying or changing anything through the Plotune Stream MCP (stream.plotune.net) - event history, dashboards, insights, funnels, retention, webhooks or the event catalog. Covers choosing the project, discovering events first, bounded and rate-limit-aware queries, and which tools need user confirmation.
 ---
 
 # Plotune Stream orientation
 
-Stream is read-mostly engineering event history for one **project**. Every project tool call costs **one credit from the project owner's account**, so plan queries instead of fishing. `usage_get` is free.
+Stream is read-mostly engineering event history for one **project**. MCP tool calls are **not charged credits**; they are **rate limited per workspace and call class**. A refused call answers 429 with `Retry-After` in seconds: wait that long, then continue with fewer calls. Cost arises where it happens (events captured, events read by an analysis job, storage), so plan bounded queries instead of fishing. `usage_get` is free and not counted.
 
 ## 1. Connect and choose the project
 

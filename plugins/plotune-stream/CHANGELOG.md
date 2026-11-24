@@ -7,3 +7,5 @@
 ## 0.2.0 — listing metadata (license, homepage, logo, Codex prompts within limits), Cursor manifest, OpenCode entry point, eval suite
 
 ## 0.2.1 — Cursor manifest displayName (matches Cursor's own plugin format)
+
+## 0.2.2 — Credit text follows CLOUD-018: MCP tool calls are not charged credits; they are rate limited per workspace and call class.

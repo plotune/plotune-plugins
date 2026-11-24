@@ -292,6 +292,164 @@ class CheckManifestsTest(unittest.TestCase):
         dump(self.root / "plugins/demo/mcp.json", servers)
         self.assertOneError("mcp.json")
 
+    # --- OpenAI (Agent Plugins) manifest: plugins/<n>/.openai-plugin/plugin.json ---
+
+    def make_openai(self):
+        pdir = self.root / "plugins/demo"
+        (pdir / "assets").mkdir(exist_ok=True)
+        (pdir / "assets/icon.png").write_bytes(b"x")
+        (pdir / "assets/logo.png").write_bytes(b"x")
+        (pdir / "skills/get-started").mkdir(parents=True, exist_ok=True)
+        (pdir / "skills/get-started/SKILL.md").write_text("---\nname: get-started\ndescription: d\n---\n")
+        (pdir / "references").mkdir(exist_ok=True)
+        dump(pdir / "references/gateway-tools.json", {"tools": ["plotune_projects_list", "events_query"]})
+        servers = {"mcpServers": {"demo": {"type": "http", "url": "https://a.example/mcp"}}}
+        dump(pdir / ".mcp.json", servers)
+        dump(pdir / "mcp.json", servers)
+        for rel in (".claude-plugin/plugin.json", ".codex-plugin/plugin.json"):
+            self.edit(f"plugins/demo/{rel}", lambda d: d.update(mcpServers="./.mcp.json"))
+        pos = {"description": "d", "prompt": "p", "tools_triggered": "plotune_projects_list, events_query",
+               "expected_behavior": "e"}
+        dump(pdir / ".openai-plugin/plugin.json", {
+            "$schema": check_manifests.OPENAI_SCHEMA, "name": "demo", "description": "Demo.",
+            "author": {"name": "Demo"}, "homepage": "https://example.com/docs", "license": "Apache-2.0",
+            "extensions": {"com.openai": {
+                "interface": {
+                    "displayName": "Demo", "shortDescription": "Short", "longDescription": "Long text.",
+                    "developerName": "Demo", "category": "Developer Tools",
+                    "websiteURL": "https://example.com", "supportURL": "https://example.com/contact",
+                    "privacyPolicyURL": "https://example.com/privacy",
+                    "defaultPrompt": ["One", "Two"],
+                    "composerIcon": "./assets/icon.png", "logo": "./assets/logo.png"},
+                "onboardingSkill": "./skills/get-started/SKILL.md",
+                "review": {"test_cases": {"positive": [pos],
+                                          "negative": [{"description": "n", "prompt": "q"}]}}}}})
+
+    def edit_openai(self, fn):
+        self.edit("plugins/demo/.openai-plugin/plugin.json", fn)
+
+    def oai(self, d):
+        return d["extensions"]["com.openai"]
+
+    def test_valid_openai_manifest_passes(self):
+        self.make_openai()
+        self.assertEqual(self.errors(), [])
+
+    def test_openai_schema_must_be_the_agent_plugins_one(self):
+        self.make_openai()
+        self.edit_openai(lambda d: d.update({"$schema": "https://example.com/x.json"}))
+        self.assertOneError("$schema")
+
+    def test_openai_name_must_equal_directory(self):
+        self.make_openai()
+        self.edit_openai(lambda d: d.update(name="other"))
+        self.assertOneError("name")
+
+    def test_openai_unknown_top_level_key_is_rejected(self):
+        self.make_openai()
+        self.edit_openai(lambda d: d.update(skills="./skills/"))
+        self.assertOneError("skills")
+
+    def test_openai_version_when_present_must_match(self):
+        self.make_openai()
+        self.edit_openai(lambda d: d.update(version="2.0.0"))
+        self.assertOneError("version")
+
+    def test_openai_missing_listing_field(self):
+        self.make_openai()
+        for field in ("displayName", "shortDescription", "longDescription", "developerName", "category",
+                      "websiteURL", "supportURL", "privacyPolicyURL"):
+            with self.subTest(field=field):
+                self.make_openai()
+                self.edit_openai(lambda d: self.oai(d)["interface"].pop(field))
+                self.assertOneError(field)
+
+    def test_openai_length_limits(self):
+        for field, limit in (("displayName", 30), ("shortDescription", 30), ("longDescription", 4000),
+                             ("developerName", 80)):
+            with self.subTest(field=field):
+                self.make_openai()
+                self.edit_openai(lambda d: self.oai(d)["interface"].update({field: "x" * (limit + 1)}))
+                self.assertOneError(field)
+
+    def test_openai_display_name_never_says_mcp_or_plugin(self):
+        for bad in ("Demo MCP", "Demo Plugin", "Demo MCP Server"):
+            with self.subTest(bad=bad):
+                self.make_openai()
+                self.edit_openai(lambda d: self.oai(d)["interface"].update(displayName=bad))
+                self.assertOneError("displayName")
+
+    def test_openai_urls_must_be_https(self):
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d)["interface"].update(privacyPolicyURL="http://example.com/p"))
+        self.assertOneError("privacyPolicyURL")
+
+    def test_openai_default_prompts(self):
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d)["interface"].update(defaultPrompt=["a", "b", "c", "d"]))
+        self.assertOneError("defaultPrompt")
+        self.edit_openai(lambda d: self.oai(d)["interface"].update(defaultPrompt=["x" * 129]))
+        self.assertOneError("defaultPrompt")
+        self.edit_openai(lambda d: self.oai(d)["interface"].update(defaultPrompt=["same", "same"]))
+        self.assertOneError("unique")
+
+    def test_openai_asset_and_onboarding_paths_must_exist(self):
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d)["interface"].update(logo="./assets/missing.png"))
+        self.assertOneError("logo")
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d).update(onboardingSkill="./skills/none/SKILL.md"))
+        self.assertOneError("onboardingSkill")
+
+    def test_openai_review_test_case_fields(self):
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d)["review"]["test_cases"]["positive"][0].pop("expected_behavior"))
+        self.assertOneError("expected_behavior")
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d)["review"]["test_cases"]["negative"][0].pop("prompt"))
+        self.assertOneError("prompt")
+
+    def test_openai_test_case_tools_must_exist_in_the_gateway_catalog(self):
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d)["review"]["test_cases"]["positive"][0].update(
+            tools_triggered="plotune_projects_list, made_up_tool"))
+        self.assertOneError("made_up_tool")
+
+    def test_openai_review_secrets_are_rejected(self):
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d)["review"].update(test_credentials={"user": "x"}))
+        self.assertOneError("test_credentials")
+
+    def test_openai_needs_exactly_one_mcp_server(self):
+        self.make_openai()
+        servers = {"mcpServers": {"a": {"type": "http", "url": "https://a.example/mcp"},
+                                  "b": {"type": "http", "url": "https://b.example/mcp"}}}
+        dump(self.root / "plugins/demo/.mcp.json", servers)
+        dump(self.root / "plugins/demo/mcp.json", servers)
+        self.assertOneError("exactly one")
+
+    def test_openai_mcp_url_must_be_https(self):
+        self.make_openai()
+        servers = {"mcpServers": {"demo": {"type": "http", "url": "http://a.example/mcp"}}}
+        dump(self.root / "plugins/demo/.mcp.json", servers)
+        dump(self.root / "plugins/demo/mcp.json", servers)
+        self.assertOneError("https")
+
+    def test_openai_mcp_url_must_equal_claude_and_codex(self):
+        self.make_openai()
+        dump(self.root / "plugins/demo/mcp.json",
+             {"mcpServers": {"demo": {"type": "http", "url": "https://b.example/mcp"}}})
+        self.assertOneError("mcp.json")
+        # the Claude and Codex manifests must both read that same .mcp.json
+        self.make_openai()
+        self.edit("plugins/demo/.codex-plugin/plugin.json", lambda d: d.update(mcpServers="./other.mcp.json"))
+        self.assertOneError("mcpServers")
+
+    def test_openai_hooks_are_not_allowed_in_the_manifest(self):
+        self.make_openai()
+        self.edit_openai(lambda d: self.oai(d).update(hooks="./hooks/hooks.json"))
+        self.assertOneError("hooks")
+
     def test_real_repo_tree_passes(self):
         self.assertEqual(check_manifests.check(REPO_ROOT), [])
 
