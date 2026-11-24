@@ -14,5 +14,5 @@ Or see the [marketplace README](../../README.md) for Claude Code, Copilot CLI an
 
 - Using the Plotune gateway (`mcp.plotune.net`)? The [`plotune`](../plotune) plugin replaces this one for gateway users: one sign-in for RMS, Stream and Nexus, with a `stream-orientation` skill written for the gateway's tool names and project handling. This plugin keeps connecting to `stream.plotune.net` directly.
 
-- Each project tool call costs one credit from the project owner's account.
+- MCP tool calls are not charged credits; they are rate limited per workspace (a refused call answers 429 with `Retry-After`).
 - The skill is read-first: writes (webhooks, catalog, dashboards, project settings) are confirmed with you before they run.

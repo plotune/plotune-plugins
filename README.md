@@ -11,7 +11,7 @@ Plugin marketplace for [Plotune](https://www.plotune.net). It packages each plug
 | [`plotune`](plugins/plotune) | 0.1.0 | One connection to Plotune (`mcp.plotune.net`): requirements (RMS), Stream event history and cloud Nexus sessions, with orientation skills and the requirements-engineering skills. Replaces `plotune-stream` for gateway users. |
 | [`plotune-requirements`](plugins/plotune-requirements) | 0.10.1 | Portable continuous requirements engineering: Draft decomposition, independent approval governance, review, change impact and multi-agent delivery. |
 | [`plotune-nexus`](plugins/plotune-nexus) | 0.3.1 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. You enter your own Nexus device's MCP URL when enabling it. |
-| [`plotune-stream`](plugins/plotune-stream) | 0.2.1 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
+| [`plotune-stream`](plugins/plotune-stream) | 0.2.2 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
 
 ## Install and update
 
