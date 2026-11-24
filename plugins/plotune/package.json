@@ -1,0 +1,14 @@
+{
+  "name": "plotune",
+  "version": "0.1.0",
+  "description": "Plotune through one connection (mcp.plotune.net): requirements (RMS), event history (Stream) and cloud Nexus sessions, with orientation skills and the Plotune requirements-engineering skills.",
+  "type": "module",
+  "main": "index.js",
+  "private": true,
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plotune/plotune-plugins"
+  }
+}

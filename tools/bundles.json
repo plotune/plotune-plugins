@@ -1,0 +1,30 @@
+{
+  "bundles": [
+    {
+      "source": "plugins/plotune-requirements",
+      "target": "plugins/plotune",
+      "paths": [
+        "skills/agent-execution",
+        "skills/automotive-profiles",
+        "skills/change-impact",
+        "skills/existing-requirements-review",
+        "skills/idea-to-requirements",
+        "skills/lead-task-tracking",
+        "skills/requirement-decomposition",
+        "skills/requirements-cycle",
+        "skills/requirements-governance",
+        "skills/traceable-delivery",
+        "skills/verification-coverage",
+        "skills/work-orchestration",
+        "skills/workspace-management",
+        "scripts",
+        "schema",
+        "templates",
+        "migrations",
+        "docs",
+        "examples",
+        "hooks"
+      ]
+    }
+  ]
+}

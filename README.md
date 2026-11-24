@@ -8,6 +8,7 @@ Plugin marketplace for [Plotune](https://www.plotune.net). It packages each plug
 
 | Plugin | Version | What it does |
 |---|---|---|
+| [`plotune`](plugins/plotune) | 0.1.0 | One connection to Plotune (`mcp.plotune.net`): requirements (RMS), Stream event history and cloud Nexus sessions, with orientation skills and the requirements-engineering skills. Replaces `plotune-stream` for gateway users. |
 | [`plotune-requirements`](plugins/plotune-requirements) | 0.10.1 | Portable continuous requirements engineering: Draft decomposition, independent approval governance, review, change impact and multi-agent delivery. |
 | [`plotune-nexus`](plugins/plotune-nexus) | 0.3.1 | Automotive engineering skills (CAN/DBC, A2L/XCP, UDS, AUTOSAR, safety and security work products) plus Plotune Nexus MCP workflows for hardware execution, artifacts and diagnostics. You enter your own Nexus device's MCP URL when enabling it. |
 | [`plotune-stream`](plugins/plotune-stream) | 0.2.1 | Connects to the Plotune Stream MCP (`stream.plotune.net`) and teaches safe, credit-aware querying of engineering event history. |
@@ -28,12 +29,15 @@ Users add the marketplace once per tool, then install the plugins they want. Whi
 
 ```
 /plugin marketplace add plotune/plotune-plugins
+/plugin install plotune@plotune-plugins
 /plugin install plotune-requirements@plotune-plugins
 /plugin install plotune-nexus@plotune-plugins
 /plugin install plotune-stream@plotune-plugins
 ```
 
 Update: `/plugin marketplace update plotune-plugins`, then `claude plugin update <plugin>@plotune-plugins`, then restart. Background auto-update is off by default; turn it on under **Marketplaces** in `/plugin`.
+
+`plotune` connects to the Plotune gateway at `https://mcp.plotune.net/mcp` (the same URL for everyone; sign in through OAuth and choose Read only or Full access). It bundles the requirements skills, so install it *instead of* `plotune-requirements`, not next to it.
 
 `plotune-nexus` asks for **Your Nexus MCP URL** when you enable it (`http://<device-ip>/mcp` on your LAN, or `https://<device-uuid>.plotune.net/mcp`) and connects to *your* device. Change it later in `/config`.
 
@@ -51,14 +55,15 @@ Codex plugin manifests have no per-user settings, so connect Nexus yourself: `co
 
 ```
 copilot plugin marketplace add plotune/plotune-plugins
+copilot plugin install plotune@plotune-plugins
 copilot plugin install plotune-requirements@plotune-plugins
 ```
 
-Update: `copilot plugin marketplace update plotune-plugins`. Tested with Copilot CLI 1.0.107: all three plugins install (12 + 24 + 1 skills), `plotune-stream` registers its MCP server, and `plotune-nexus` correctly registers none (its per-user URL is Claude-only). Copilot reads the Claude manifests, so a Copilot user sees the same plugins and versions as a Claude Code user.
+Update: `copilot plugin marketplace update plotune-plugins`. Tested with Copilot CLI 1.0.107: all three plugins install (12 + 24 + 1 skills), `plotune-stream` registers its MCP server, and `plotune-nexus` correctly registers none (its per-user URL is Claude-only). Copilot reads the Claude manifests, so a Copilot user sees the same plugins and versions as a Claude Code user. `plotune` was added after that test and has not been installed with Copilot CLI yet.
 
 ### Cursor
 
-Per Cursor's documentation, import this repository as a team marketplace (**Dashboard → Plugins & MCPs → Add Marketplace → Import from Repo**). `plotune-stream` ships an `mcp.json`; add your own Nexus server in Cursor's MCP settings. *(Not verified, see the table above: this follows Cursor's docs and has not been run.)*
+Per Cursor's documentation, import this repository as a team marketplace (**Dashboard → Plugins & MCPs → Add Marketplace → Import from Repo**). `plotune` and `plotune-stream` ship an `mcp.json`; add your own Nexus server in Cursor's MCP settings. *(Not verified, see the table above: this follows Cursor's docs and has not been run.)*
 
 ### OpenCode
 
@@ -75,7 +80,7 @@ opencode plugin add    "git+https://github.com/plotune/plotune-plugins.git#plotu
 opencode plugin remove "git+https://github.com/plotune/plotune-plugins.git#plotune-stream--v0.2.0::path:plugins/plotune-stream"
 ```
 
-Notes: OpenCode's `plugin check` / `plugin update` did not recognise these Git entries in testing, and re-adding a moving branch stays on the cached version, so use tags. The adapter registers skills only; add MCP servers yourself in `opencode.json`. Tested with OpenCode 2.2.5: installing all three plugins from their GitHub release tags registered all 37 skills, and the tag-to-tag update flow was tested against a local clone. While the repository is private, OpenCode needs your Git credentials.
+Notes: OpenCode's `plugin check` / `plugin update` did not recognise these Git entries in testing, and re-adding a moving branch stays on the cached version, so use tags. The adapter registers skills only; add MCP servers yourself in `opencode.json` (for `plotune`: a remote server at `https://mcp.plotune.net/mcp`). Tested with OpenCode 2.2.5: installing all three plugins from their GitHub release tags registered all 37 skills, and the tag-to-tag update flow was tested against a local clone. While the repository is private, OpenCode needs your Git credentials.
 
 ## How releases work
 
@@ -99,6 +104,7 @@ plugins/<name>/
   skills/ …                         the shared body
   evals/                            behaviour tests for `claude plugin eval`
 tools/                              checks, bump/release/sync scripts and their tests
+                                    (bundles.json + sync_bundles.py: copies from one plugin into another)
 ```
 
 ## License

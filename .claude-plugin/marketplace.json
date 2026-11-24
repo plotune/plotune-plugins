@@ -6,6 +6,12 @@
   },
   "plugins": [
     {
+      "name": "plotune",
+      "source": "./plugins/plotune",
+      "description": "Plotune through one connection (mcp.plotune.net): requirements (RMS), event history (Stream) and cloud Nexus sessions, with orientation skills and the Plotune requirements-engineering skills.",
+      "category": "development"
+    },
+    {
       "name": "plotune-requirements",
       "source": "./plugins/plotune-requirements",
       "description": "Portable continuous requirements engineering with proactive Draft decomposition, independent approval governance, requirements review, change impact, and multi-agent delivery.",

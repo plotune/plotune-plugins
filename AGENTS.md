@@ -20,6 +20,8 @@ python tools/check_skills.py         # SKILL.md frontmatter
 python tools/check_evals.py          # eval suites are well-formed
 python tools/check_mcp_urls.py --offline
 python tools/sync_opencode.py --check
+python tools/sync_bundles.py --check      # bundled copies in plugins/plotune match their source
+python tools/check_gateway_tools.py       # skills in plugins/plotune name only gateway tools
 python -I -m unittest discover -s tools/tests
 node --test tools/tests/opencode-adapter.test.mjs
 python tools/check_version_bumps.py --base origin/main   # in a branch with plugin changes
@@ -35,10 +37,13 @@ claude plugin validate .
 | `plugins/<n>/.cursor-plugin/plugin.json`, `package.json` | Cursor / OpenCode | yes (not `version`) |
 | `plugins/<n>/index.js` | OpenCode adapter | **no**: generated from `tools/opencode-adapter.js` by `tools/sync_opencode.py` |
 | `.claude-plugin/`, `.agents/plugins/`, `.cursor-plugin/` `marketplace.json` | catalogs (Claude+Copilot / Codex / Cursor) | yes; Claude entries never carry `version` |
+| `plugins/plotune/{skills/<13 requirements skills>,scripts,schema,templates,migrations,docs,examples,hooks}` | copies of `plugins/plotune-requirements`, declared in `tools/bundles.json` | **no**: edit the source, then `python tools/sync_bundles.py` |
+| `plugins/plotune/references/gateway-tools.json` | gateway tool names, generated from the monorepo catalog | **no**: `python tools/generate_gateway_tools.py <monorepo>/packages/contracts/mcp-catalog` |
 | `tools/` | repo tooling and its tests | yes, test-first |
 
 ## Conventions
 
+- **`plotune` bundles `plotune-requirements`.** A change to a bundled path of the source plugin changes the `plotune` copy too: run `python tools/sync_bundles.py` and bump both plugins (`plotune-requirements` for the source change, `plotune` for the copy). `plotune`'s own skills (`plotune-orientation`, `stream-orientation`, `nexus-cloud-orientation`) use gateway tool names only; `tools/check_gateway_tools.py` enforces it. After a catalog change in the monorepo, regenerate `gateway-tools.json` and review the diff.
 - Plugin `name` equals its directory name, kebab-case. Display names ("Plotune Nexus") go in `displayName` / `interface.displayName`; changing `name` breaks installs.
 - A skill's frontmatter `name` equals its directory; `description` is at most 1024 characters and says *when to use it*.
 - **Per-user MCP URLs** (Nexus) must never be a fixed URL and never live in a root `.mcp.json` (Codex/Copilot would load an unresolved placeholder). Claude's `userConfig` + `mcp/claude-nexus.mcp.json` is the pattern; other tools use their own `mcp add`.
