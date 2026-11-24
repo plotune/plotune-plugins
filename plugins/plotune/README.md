@@ -10,6 +10,17 @@ Connects your agent to Plotune through **one** MCP server, the Plotune gateway (
 
 Or see the [marketplace README](../../README.md) for Claude Code, Copilot CLI, Codex, Cursor and OpenCode. The MCP server is registered by the plugin's `.mcp.json` (`mcp.json` for Cursor); sign in through the OAuth prompt on first use. The URL is the same for everyone, unlike `plotune-nexus`, which connects to your own device.
 
+## What the connector's tools can do
+
+The plugin's skills call the Plotune server's tools. With **Full access** (and the right role in the workspace), those tools can do the following. With **Read only**, only the reading tools and the Stream analysis tools are offered; none of the tools below that send, delete or change access are. Claude asks before each tool that is not read-only, and the tools that delete, revoke access, run shell commands or send to hardware are also marked destructive.
+
+- **Send to hardware and other systems.** Send CAN frames, CAN messages from a DBC file and periodic CAN traffic; send bytes on UART and serial ports; send UDS diagnostic requests to a vehicle or ECU; write XCP calibration values and stimulate XCP signals; publish DDS messages; run test sequences. On a Nexus Edge or machine, `nexus_exec` runs shell commands (as an unprivileged user, or as root for Owners and Admins), and `nexus_start_container` starts containers in a session.
+- **Send data to outside URLs.** `webhooks_create` and `webhooks_update` forward the project's captured events to an HTTPS URL that an Owner or Admin chooses; `webhook_test` sends one sample event to it now.
+- **Publish and share.** Create and change Stream dashboards, insights and actions, and RMS records (requirements, test cases, test runs, traceability), visible to the project's members. Approvers can freeze baselines.
+- **Delete.** Delete dashboards (one or many), dashboard tiles, insights, actions and webhooks; remove traceability links; delete files in the Nexus session workspace; remove container images; delete virtual CAN interfaces.
+- **Change access.** `members_set_role` changes a project member's RMS role (reader, editor, approver); `connections_revoke` revokes an agent connection; `processes_set` and `settings_set` change the approval lifecycle and governance settings (Admin only); `nexus_connect_device_to_pc` makes a bench USB device available on the user's own PC.
+- **Pay.** No tool makes payments or moves money. Some tools use the workspace's plan allowance: Stream analysis jobs and webhook deliveries count against its event allowance, and Nexus sessions count session time.
+
 ## Skills
 
 | Skill | What it does |
