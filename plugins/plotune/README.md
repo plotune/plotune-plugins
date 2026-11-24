@@ -30,3 +30,13 @@ The bundled hook only records subagent calls when you have an `ai-pool.json`, as
 ## Tool names
 
 `references/gateway-tools.json` lists every tool name the gateway offers (plus `plotune_projects_list`), generated from the monorepo catalog by `tools/generate_gateway_tools.py`, with the monorepo commit it was generated from. `python tools/check_gateway_tools.py` fails when a skill names an old (renamed) or unavailable tool, for example `list_jobs_tool` instead of `nexus_list_jobs`.
+
+## OpenAI plugin directory
+
+`.openai-plugin/plugin.json` is the manifest for OpenAI's plugin submission (Agent Plugins schema; listing fields, starter prompts, onboarding skill and the review test cases live under `extensions.com.openai`). It sits in a hidden folder because a root `plugin.json` would shadow the Claude manifest in tools that read a root manifest first. Build and validate the upload with:
+
+```
+python tools/package_openai.py plotune      # writes dist/plotune-<version>-openai.zip (gitignored)
+```
+
+The script puts `plugin.json` (with `version` from the Claude manifest) and a portable `mcp.json` (`$schema`, `"type": "streamable-http"`, generated from `.mcp.json`) at the ZIP root next to `skills/`, `assets/` and the files the skills use. It leaves out `hooks/` (OpenAI cannot accept lifecycle hooks), evals, other tools' manifests and anything that looks like a secret, then validates the result. Warnings list what the owner must still enter: `termsOfServiceURL` and `demo_recording_url` (both required for MCP review). Reviewer credentials go in the submission dashboard, never in the ZIP. Test cases and starter prompts: [`docs/plotune-review-test-cases.md`](../../docs/plotune-review-test-cases.md).

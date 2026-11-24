@@ -35,9 +35,9 @@
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/logo.png",
     "defaultPrompt": [
-      "Which Plotune projects can I reach, and which products (RMS, Stream, Nexus) does each one have?",
-      "Show the latest Stream events of my project from the last 24 hours, bounded to 100 results.",
-      "List my Nexus Edges and start a cloud session on one, then stop it when we are done."
+      "Show the requirements in Draft for my Plotune project.",
+      "Summarize test failures in Stream from the last 7 days.",
+      "Which Nexus Edges are online right now?"
     ]
   },
   "homepage": "https://github.com/plotune/plotune-plugins/tree/main/plugins/plotune",

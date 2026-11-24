@@ -24,6 +24,7 @@ python tools/sync_bundles.py --check      # bundled copies in plugins/plotune ma
 python tools/check_gateway_tools.py       # skills in plugins/plotune name only gateway tools
 python -I -m unittest discover -s tools/tests
 node --test tools/tests/opencode-adapter.test.mjs
+python tools/package_openai.py plotune    # builds dist/ (gitignored) and validates the OpenAI ZIP
 python tools/check_version_bumps.py --base origin/main   # in a branch with plugin changes
 claude plugin validate .
 ```
@@ -35,6 +36,7 @@ claude plugin validate .
 | `plugins/<n>/.claude-plugin/plugin.json` | Claude + Copilot manifest, the source of truth for name and version | yes (not `version`) |
 | `plugins/<n>/.codex-plugin/plugin.json` | Codex manifest (+ `interface` block) | yes (not `version`) |
 | `plugins/<n>/.cursor-plugin/plugin.json`, `package.json` | Cursor / OpenCode | yes (not `version`) |
+| `plugins/<n>/.openai-plugin/plugin.json` | OpenAI plugin manifest (Agent Plugins schema, listing fields under `extensions.com.openai`); `tools/package_openai.py` copies it to the ZIP root and fills in `version` | yes (no `version` key) |
 | `plugins/<n>/index.js` | OpenCode adapter | **no**: generated from `tools/opencode-adapter.js` by `tools/sync_opencode.py` |
 | `.claude-plugin/`, `.agents/plugins/`, `.cursor-plugin/` `marketplace.json` | catalogs (Claude+Copilot / Codex / Cursor) | yes; Claude entries never carry `version` |
 | `plugins/plotune/{skills/<13 requirements skills>,scripts,schema,templates,migrations,docs,examples,hooks}` | copies of `plugins/plotune-requirements`, declared in `tools/bundles.json` | **no**: edit the source, then `python tools/sync_bundles.py` |
