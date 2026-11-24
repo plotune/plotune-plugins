@@ -42,7 +42,8 @@
         ],
         "brandColor": "#6C73B6",
         "composerIcon": "./assets/icon.png",
-        "logo": "./assets/logo.png"
+        "logo": "./assets/logo.png",
+        "termsOfServiceURL": "https://www.plotune.net/legal#terms"
       },
       "onboardingSkill": "./skills/plotune-orientation/SKILL.md",
       "review": {
