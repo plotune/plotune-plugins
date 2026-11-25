@@ -28,7 +28,10 @@ Before the first role is spawned, the Orchestrator proposes a short team plan an
 
 The plan states:
 
-- **Per role** (Designer, Build, Verify and Build's Independent reviewer): the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0; its autonomy (goal only, goal with approach hints, or step list: the more capable the role, the less method it gets); and the escalation it may use (a stronger model or effort) if it keeps blocking for lack of capacity.
+- **Per role** (Designer, Build, Verify and Build's Independent reviewer): the runtime it runs on (the host's own subagents, or another agent runtime the user can launch; both are first-class staff, and an effort variant is named the way that runtime names it), whether it can load skills and whether it has the connector to the requirements workspace (see *Roles on other runtimes*); the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0; its autonomy (goal only, goal with approach hints, or step list: the more capable the role, the less method it gets); and the escalation it may use (a stronger model or effort) if it keeps blocking for lack of capacity.
+- **Cost and visibility:** limits in units the Orchestrator can count (iterations, agents started, long runs), not estimated cost: the user reads actual usage at checkpoints and decides. For each role, how its progress is visible: where its output lands and who confirms it. A role whose work cannot be followed is re-planned before it is spawned.
+- **Long-running work:** which end-to-end runs, CI waits and other external processes may run, and the bound on each (time or number of runs).
+- **Iteration size:** how much one Designer pass may produce before Verify reviews it (requirements, test cases, open decisions). If the user sets none, the Orchestrator proposes one small enough for one Verify review pass and says so; a larger delta is split into several iterations.
 - **AI pool:** the entries (runtime, model, effort, context limit) the roles may draw calls from, and the budget for calls, tokens and cost, overall and per role, with `over_budget` set to `reject` or `warn` by the Orchestrator. These come from the user's pool config; the plugin ships no model names or prices.
 - **Staffing timeline:** when each role is first needed, what it waits on, and when it is released. A role is spawned when its work is due and not before, so nothing sits idle; roles whose work does not depend on each other run in parallel. A role keeps its context only where that helps (the Independent reviewer always starts fresh).
 - **Shared resources** (platform services, simulators and compute, test equipment, devices, people): for each, who uses it and when, how access is arranged (a lock or queue the user designs, or the Orchestrator's own proposal if the user has none), and what it costs in time or money when that is knowable.
@@ -79,11 +82,15 @@ Build has no direct line to the Orchestrator; its blockers go to Designer or Ver
    3. Verify writes the test cases while the requirement is being defined and links them to the requirement, Actors and Use Cases.
    4. Designer checks that those tests cover the Use Case steps and Actor goals, and returns coverage gaps to Verify.
 
-   Designer never writes the tests and Verify never writes the requirements, so each checks work it did not author.
+   Designer never writes the tests and Verify never writes the requirements, so each checks work it did not author. A pass that would exceed the plan's iteration size is split, and the open decisions it raises travel with it (see *Blockers*).
 2. **Orchestrator gate:** transitions within the delegation; a requirement the Designer wrote is approved only after Verify's review.
 3. **Build** delivers against the exact requirement revisions: unit tests pass, Independent reviewer, fixes, hand-off to Verify.
 4. **Verify** runs per level and records PASS, FAIL or NOT VERIFIED with real evidence.
 5. **Failures** are classified by Verify with evidence: implementation defect (to Build), test defect (Verify fixes), environment (rerun) or requirement defect. Only a requirement defect goes to Designer, as a change packet: failing evidence, exact revision, the criterion that did not hold, impact list, what must not change. A failing test never rewrites an approved requirement to make it pass.
+
+## Progress is what was confirmed
+
+Count as progress only what the checking role accepted (Verify for Build's delivery and for testability, the Independent reviewer for code) or what a status lookup shows (a merged PR, a CI result, a record's state or revision, an execution with evidence), never a role's own report of being in progress. Do not read the work itself; judging it is the checking role's job. Long-running or open-ended work starts only when the plan allows it, within its bound, and no agent stays alive just to wait. When confirmed progress stops moving, change the setup or bring it to the user instead of sending another round.
 
 ## Progress is per level, not per goal
 
@@ -102,7 +109,7 @@ The Orchestrator triages in this order and reaches the user last:
 5. A missing resource or environment: that level is NOT VERIFIED with the condition recorded.
 6. A real decision, or impact outside the scope: the user.
 
-Keep a blocker ledger with the role, kind, what it blocks and status; merge duplicates; blockers never stop independent work. Bring the open ones to the user together at checkpoints, ordered by what each unblocks and each with a recommended default.
+Keep a blocker ledger with the role, kind, what it blocks and status; merge duplicates; blockers never stop independent work. Bring the open ones to the user together at checkpoints, ordered by what each unblocks and each with a recommended default. When there are many, group them: decisions that need the user's thought; ones with a safe default the Orchestrator will apply unless the user objects; numbers to confirm later (declared parameters, see `roles/designer.md`), which do not block design; and governance (approval, freeze, scope). The user answers the first group and confirms the rest in one reply.
 
 A blocker that returns in the same form after being answered means the answer did not help or the role does not fit the task. Re-plan the role (narrower task, stronger model within the allowance) instead of asking the user again. This is a re-plan trigger, not a stop condition. To prevent blockers, put what a role usually needs in its packet (where the sources are, commands, equipment access) and give smaller models narrower tasks.
 
@@ -123,6 +130,21 @@ Once the Orchestrator has defined a pool, it governs every AI call the roles mak
 
 Running out of budget stops nothing. In `reject` mode the wrapper refuses the call without running it (in `warn` mode it runs and flags it, for the Orchestrator to review); the role then does the work itself, or waits if the work really needs the call and the Orchestrator says wait. Usage a runtime does not report is recorded as unknown, never estimated. Details and the config format are in `roles/pool.md`.
 
+## Roles on other runtimes
+
+A role may run where this plugin is not installed, for example on another agent runtime. Two things then differ, and the packet says which apply:
+
+- **It cannot load skills.** The packet names the files to read first by path, relative to the plugin root: the role's file in `roles/` and each skill's `SKILL.md` it needs, in the order to read them. Point, do not paste, as for every packet.
+- **It cannot reach the requirements workspace.** The role reads the context the Orchestrator exported for it and returns its drafts as a file in the handoff format (`roles/file-handoff.md`, `schema/handoff-records.schema.json`). The Orchestrator checks the file, imports it as Drafts with the authoring role recorded in each reason, and reports what was imported and what was not. Import in the largest batches the workspace offers; where it has no batch operation for a record kind, import one by one, and whatever is not imported stays open work in the report, never silently dropped.
+
+A role that cannot spawn helpers cannot run Build's Independent reviewer; the Orchestrator runs it instead (`roles/build.md`). A role that keeps context between messages is a standing role, not a pool call (`roles/pool.md`).
+
+## Measurements and gates
+
+- **Privileged runs.** When a measurement needs access a role does not have (root, a device, the bench), Build writes the instrument, the Orchestrator reads it and then runs it unchanged, and Verify judges the output. The Orchestrator passes the raw output on and draws no conclusion from it.
+- **Gates belong to Verify.** An acceptance gate or threshold is changed only by Verify, as a test-case revision. A fix to an instrument that would change what a gate means goes to Verify as a proposal (`roles/build.md`).
+- **Instrument self-check.** Before a run that decides a go or no-go, the instrument is proved on an input with a known result (known good, and known bad where that is cheap), and that evidence goes with the run. A gating run that fails for instrument reasons is a test defect, not a design result.
+
 ## Delegation and existing systems
 
 A role's packet follows `work-orchestration` (and `schema/delegation-packet.schema.json` where useful) and adds the role's file from `roles/`, the names of the skills it should load and its approved model, permissions and resource access, because a subagent does not inherit this skill's text. A packet is a brief, not a permission.
@@ -135,4 +157,4 @@ On an existing system, build against the existing baseline and leave it untouche
 
 ## Report
 
-At checkpoints, give a compact view: goal and scope, per level done, failed or not verified, what waits on the user, what is outside scope. Distinguish proposed, saved, approved, implemented and verified.
+At checkpoints, give a compact view: goal and scope, per level done, failed or not verified, what waits on the user, what is outside scope. Distinguish proposed, saved, approved, implemented and verified, and say what confirmed each item of progress.
