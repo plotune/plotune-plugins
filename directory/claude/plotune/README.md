@@ -1,6 +1,6 @@
 # Plotune
 
-Version 0.1.1. Connects Claude to Plotune through **one** remote MCP server, the Plotune gateway at `https://mcp.plotune.net/mcp` (registered by this plugin's `.mcp.json` as `plotune`): requirements (RMS), event history and analytics (Stream), and cloud sessions on Nexus Edges with their test devices (Nexus). It is the same server as the Plotune connector in the Claude directory.
+Version 0.1.2. Connects Claude to Plotune through **one** remote MCP server, the Plotune gateway at `https://mcp.plotune.net/mcp` (registered by this plugin's `.mcp.json` as `plotune`): requirements (RMS), event history and analytics (Stream), and cloud sessions on Nexus Edges with their test devices (Nexus). It is the same server as the Plotune connector in the Claude directory.
 
 ## What it does, sends and fetches
 

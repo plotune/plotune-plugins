@@ -7,6 +7,11 @@ Role:        Designer (role file: roles/designer.md; skills: requirement-decompo
              change-impact, existing-requirements-review)
 Autonomy:    goal with approach hints
 Model/effort: as approved in the team plan
+Runtime:     as approved; if it cannot load skills, read first, by path from the plugin
+             root: skills/requirements-cycle/roles/designer.md, then
+             skills/requirement-decomposition/SKILL.md and skills/change-impact/SKILL.md
+Workspace:   as approved; without the requirements connector, read the exported context
+             in handoff/context/ and return drafts as a handoff file (roles/file-handoff.md)
 
 Goal:        The reported charge level of the battery pack must stay stable when the
              pack temperature changes and must not jump on short load spikes.
