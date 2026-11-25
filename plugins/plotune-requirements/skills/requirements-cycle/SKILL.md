@@ -29,7 +29,8 @@ Before the first role is spawned, the Orchestrator proposes a short team plan an
 The plan states:
 
 - **Per role** (Designer, Build, Verify and Build's Independent reviewer): the runtime it runs on (the host's own subagents, or another agent runtime the user can launch; both are first-class staff, and an effort variant is named the way that runtime names it), whether it can load skills and whether it has the connector to the requirements workspace (see *Roles on other runtimes*); the model and effort the Orchestrator chose for it, with a one-line reason and whether it is the same model as the Orchestrator or a lower one; the tools it gets and what it may write (records, repository and branch, equipment); any approval authority, which is the delegation recorded in Phase 0; its autonomy (goal only, goal with approach hints, or step list: the more capable the role, the less method it gets); and the escalation it may use (a stronger model or effort) if it keeps blocking for lack of capacity.
-- **Cost and visibility:** a cost ceiling for the whole goal, or the user's statement that there is none, and for each role how its progress is visible: where its output lands, how often it reports and who reads it. A role whose work cannot be followed is re-planned before it is spawned.
+- **Cost and visibility:** limits in units the Orchestrator can count (iterations, agents started, long runs), not estimated cost: the user reads actual usage at checkpoints and decides. For each role, how its progress is visible: where its output lands and who confirms it. A role whose work cannot be followed is re-planned before it is spawned.
+- **Long-running work:** which end-to-end runs, CI waits and other external processes may run, and the bound on each (time or number of runs).
 - **Iteration size:** how much one Designer pass may produce before Verify reviews it (requirements, test cases, open decisions). If the user sets none, the Orchestrator proposes one small enough for one Verify review pass and says so; a larger delta is split into several iterations.
 - **AI pool:** the entries (runtime, model, effort, context limit) the roles may draw calls from, and the budget for calls, tokens and cost, overall and per role, with `over_budget` set to `reject` or `warn` by the Orchestrator. These come from the user's pool config; the plugin ships no model names or prices.
 - **Staffing timeline:** when each role is first needed, what it waits on, and when it is released. A role is spawned when its work is due and not before, so nothing sits idle; roles whose work does not depend on each other run in parallel. A role keeps its context only where that helps (the Independent reviewer always starts fresh).
@@ -86,6 +87,10 @@ Build has no direct line to the Orchestrator; its blockers go to Designer or Ver
 3. **Build** delivers against the exact requirement revisions: unit tests pass, Independent reviewer, fixes, hand-off to Verify.
 4. **Verify** runs per level and records PASS, FAIL or NOT VERIFIED with real evidence.
 5. **Failures** are classified by Verify with evidence: implementation defect (to Build), test defect (Verify fixes), environment (rerun) or requirement defect. Only a requirement defect goes to Designer, as a change packet: failing evidence, exact revision, the criterion that did not hold, impact list, what must not change. A failing test never rewrites an approved requirement to make it pass.
+
+## Progress is what was confirmed
+
+Count as progress only what the checking role accepted (Verify for Build's delivery and for testability, the Independent reviewer for code) or what a status lookup shows (a merged PR, a CI result, a record's state or revision, an execution with evidence), never a role's own report of being in progress. Do not read the work itself; judging it is the checking role's job. Long-running or open-ended work starts only when the plan allows it, within its bound, and no agent stays alive just to wait. When confirmed progress stops moving, change the setup or bring it to the user instead of sending another round.
 
 ## Progress is per level, not per goal
 
@@ -152,4 +157,4 @@ On an existing system, build against the existing baseline and leave it untouche
 
 ## Report
 
-At checkpoints, give a compact view: goal and scope, per level done, failed or not verified, what waits on the user, what is outside scope. Distinguish proposed, saved, approved, implemented and verified.
+At checkpoints, give a compact view: goal and scope, per level done, failed or not verified, what waits on the user, what is outside scope. Distinguish proposed, saved, approved, implemented and verified, and say what confirmed each item of progress.

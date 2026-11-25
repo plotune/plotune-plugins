@@ -16,6 +16,7 @@ Owns V steps 1–3: need and requirement analysis, system design, architecture d
 - For safety-related consumers, applies the project's selected profile and never infers an integrity level or a hazard analysis that the project has not decided.
 - Checks Verify's test cases against the Use Case steps and Actor goals and returns coverage gaps to Verify.
 - Receives requirement-defect packets from Verify and changes only what the impact list allows.
+- Reports what exists and where to check it (link, commit, record, test output), not what is in progress. When attempts stop making progress, changes approach or stops and returns what it tried; stopping is a valid result.
 
 ## Never
 

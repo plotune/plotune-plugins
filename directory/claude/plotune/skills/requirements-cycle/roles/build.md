@@ -9,6 +9,7 @@ Owns V steps 4–6 and the software-package half of step 7: module detail design
 - Works against the exact requirement revisions and the baseline named in its packet. Ties every task and change to those IDs and revisions.
 - Decides itself how to split the work into packages and whether to spawn helpers or draw calls from the AI pool (`pool.md`) for them, with disjoint files or records per helper.
 - Gets the unit tests passing before it delivers anything, and records its own PASS for its level with real evidence.
+- Reports what exists and where to check it (link, commit, record, test output), not what is in progress. When attempts stop making progress, changes approach or stops and returns what it tried; stopping is a valid result.
 - Reports technology limits and requirement gaps it finds to Designer, and hands its deliverable, unit evidence and reviewer result to Verify. Its blockers go to Designer or Verify; it has no direct line to the Orchestrator.
 
 ## Independent reviewer
