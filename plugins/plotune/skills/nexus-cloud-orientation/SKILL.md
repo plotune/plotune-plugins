@@ -1,6 +1,6 @@
 ---
 name: nexus-cloud-orientation
-description: Use before starting or operating a cloud Nexus session through the plotune MCP server (mcp.plotune.net) - finding an Edge, starting a session on its test devices, running device tools (CAN, UART, UDS, XCP, DDS, test sequences), long recordings as jobs, files in the session workspace, and stopping the session. Covers polling, the 300 s relay limit, which tools actuate hardware and are confirmed every time, and what read-only connections cannot do.
+description: Use before starting or operating a cloud Nexus session through the plotune MCP server (mcp.plotune.net) - finding an Edge, starting a session on its test devices, running device tools (CAN, UART, UDS, XCP, DDS), long recordings as jobs, files in the session workspace, and stopping the session. Covers polling, the 300 s relay limit, which tools actuate hardware and are confirmed every time, and what read-only connections cannot do.
 ---
 
 # Nexus cloud orientation (gateway)
@@ -22,7 +22,9 @@ Nexus runs **cloud sessions** on a Nexus Edge: a bench computer with test device
 
 ## 3. Device tools take `session_id`
 
-Every device tool (CAN, UART, UDS, XCP, DDS, DoIP, bridge, test sequences, ...) requires the `session_id` of a running session. Pass the same `project_id` you started it with when the account has several Nexus projects. Read before you act: list the devices, look at the state (`get_uart_session`, `get_can_gateway`, `get_record_can`, ...), then act.
+Every device tool (CAN, UART, UDS, XCP, DDS, DoIP, bridge, ...) requires the `session_id` of a running session. Pass the same `project_id` you started it with when the account has several Nexus projects. Read before you act: list the devices, look at the state (`get_uart_session`, `get_can_gateway`, `get_record_can`, ...), then act.
+
+Scripted test sequences are not offered through mcp.plotune.net; they are available on the Edge's own MCP endpoint. Through the gateway, run a test as individual tool calls, each confirmed as below.
 
 ## 4. Long work runs as jobs
 
@@ -35,7 +37,7 @@ Recordings, periodic sends and similar work start an async **job**; do not wait 
 
 ## 5. Hardware-actuating tools are destructive
 
-Tools that send, set, write, stimulate, start or stop things on a device are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `run_test_sequence`, `publish_dds_message`, `nexus_exec` and `nexus_stop_session`. The client **asks the user each time**.
+Tools that send, set, write, stimulate or stop things on a device, or stop running work, are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `nexus_exec` and `nexus_stop_session`. The client **asks the user each time**.
 
 - Before calling one, say in a sentence what it will send or change, on which device, and why. Wait for the answer; never ask the user to approve a batch of different actions at once and never split an action to avoid the prompt.
 - Do not actuate unless the user's task calls for it. A bench device can be attached to a real ECU or vehicle.
