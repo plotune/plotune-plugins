@@ -4,4 +4,4 @@
 
 ## 0.1.1 — plotune-orientation: RMS is the requirements store; local workspaces and the AI pool need the full plugin (the Claude directory edition has no scripts/).
 
-## 0.1.2 — nexus-cloud-orientation: scripted test sequences are not offered through mcp.plotune.net (OpenAI review 2026-11-28); stopping running work is destructive; gateway-tools.json from the monorepo catalog at d0f2f0e.
+## 0.1.2 — follow the gateway after the OpenAI review of 2026-11-28: no scripted test sequences through mcp.plotune.net; stopping work, containers and watch restarts are destructive; `insights_run` replaces a shared result, so it is not a read; `nexus_exec` described as it runs. The OpenAI package leaves out `scripts/pool_hook.py` (hooks only) and its negative case 1 no longer depends on the connection mode. gateway-tools.json from the monorepo catalog at fdd28b1.

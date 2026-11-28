@@ -39,6 +39,8 @@ OPENAI_MANIFEST = check_manifests.OPENAI_MANIFEST
 EXCLUDED_TOP = {"hooks", "evals", "tests", "node_modules", "dist", "index.js", "package.json",
                 "README.md", "CHANGELOG.md", "mcp.json", ".mcp.json", "plugin.json"}
 EXCLUDED_ANYWHERE = {"__pycache__", ".DS_Store"}
+# Runs only from hooks/hooks.json, which an OpenAI package cannot carry: it would ship as dead code.
+EXCLUDED_FILES = {"scripts/pool_hook.py"}
 SECRET_NAMES = re.compile(r"(^\.env($|\.)|\.(pem|key|p12|pfx)$|^id_(rsa|ed25519|ecdsa)|^credentials(\.|$))", re.I)
 SECRET_CONTENT = re.compile(
     r"-----BEGIN [A-Z ]*PRIVATE KEY-----|\bghp_[A-Za-z0-9]{30,}|\bgithub_pat_[A-Za-z0-9_]{30,}"
@@ -74,7 +76,7 @@ def portable_mcp(source: dict) -> dict:
 
 
 def _skipped(parts) -> bool:
-    return (parts[0].startswith(".") or parts[0] in EXCLUDED_TOP
+    return ("/".join(parts) in EXCLUDED_FILES or parts[0].startswith(".") or parts[0] in EXCLUDED_TOP
             or any(p in EXCLUDED_ANYWHERE or p.startswith(".") for p in parts[1:])
             or parts[-1].endswith(".pyc"))
 

@@ -217,6 +217,9 @@ class PackageOpenAITest(unittest.TestCase):
             self.assertEqual(errors, [])
             names = self.names(path)
             self.assertNotIn("hooks/hooks.json", names)
+            # The hook's script runs only from hooks/hooks.json, which OpenAI does not take: it would ship as dead code.
+            self.assertNotIn("scripts/pool_hook.py", names)
+            self.assertIn("scripts/pool.py", names)
             self.assertIn("skills/plotune-orientation/SKILL.md", names)
 
     def test_review_doc_matches_the_manifest_and_the_gateway_catalog(self):

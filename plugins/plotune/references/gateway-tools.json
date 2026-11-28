@@ -2,7 +2,7 @@
   "generatedFrom": {
     "repository": "plotune monorepo",
     "catalog": "packages/contracts/mcp-catalog",
-    "commit": "d0f2f0e95b17b043b97b753aebd6f4fa39d19453"
+    "commit": "fdd28b133e7bec8304fff5713b676876c5d98d59"
   },
   "tools": [
     "acquire_can_interface",

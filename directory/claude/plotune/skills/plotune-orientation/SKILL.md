@@ -36,7 +36,7 @@ Every product tool takes an optional `project_id` (UUID).
 ## 5. Read only connections
 
 - Tools that need a write permission are **not listed** at all: RMS and Nexus writes, Stream webhooks, catalog and dashboard changes.
-- **Stream analysis tools are still listed** (`events_aggregate`, the funnel, retention, lifecycle, stickiness, paths and `insights_run` tools). They start analysis jobs for the caller, which is why they are not marked read-only, but they do not change project data. Treat them as reads.
+- **Stream analysis tools are still listed** (`events_aggregate` and the funnel, retention, lifecycle, stickiness and paths tools). They are not marked read-only because each call starts an analysis job for the caller and uses workspace allowance; they do not change project data. `insights_run` is not listed: it replaces the insight's saved result, which the whole team sees.
 - A read-only connection cannot start a Nexus session, so it can only look at sessions that are already running.
 - If the user asks for something a read-only connection cannot do, say so and tell them to reconnect with Full access. Do not look for a workaround.
 

@@ -24,7 +24,7 @@ Nexus runs **cloud sessions** on a Nexus Edge: a bench computer with test device
 
 Every device tool (CAN, UART, UDS, XCP, DDS, DoIP, bridge, ...) requires the `session_id` of a running session. Pass the same `project_id` you started it with when the account has several Nexus projects. Read before you act: list the devices, look at the state (`get_uart_session`, `get_can_gateway`, `get_record_can`, ...), then act.
 
-Scripted test sequences are not offered through mcp.plotune.net; they are available on the Edge's own MCP endpoint. Through the gateway, run a test as individual tool calls, each confirmed as below.
+This connection has no scripted test sequences: run a test as individual tool calls, each confirmed as below.
 
 ## 4. Long work runs as jobs
 
@@ -32,12 +32,12 @@ Recordings, periodic sends and similar work start an async **job**; do not wait 
 
 - `nexus_list_jobs` lists the session's jobs, `nexus_get_job_status` reads one, `nexus_wait_for_job` waits for a job for at most 240 s per call (poll again for longer work), `nexus_cancel_job` cancels it.
 - The relay stops **any single call after 300 s** with the tool error `timeout`. Every device tool bounds its own waits below that; never design a step that needs one call to run longer. Re-poll instead.
-- `nexus_exec` also returns a job id at once: follow it with `nexus_exec_status` and `nexus_exec_output`; `nexus_exec_cancel` stops it. Commands are audited and run as the session user in `/workspace`.
+- `nexus_exec` also returns a job id at once: follow it with `nexus_exec_status` and `nexus_exec_output`; `nexus_exec_cancel` stops it. In a cloud session the command runs as the session user in `/workspace`; on an Edge or machine target it runs as an unprivileged user, or as root only when the user asked for `admin` (Owner/Admin only). Commands are audited, and every `nexus_exec` call is confirmed by the user.
 - Results land as files in the session workspace (an `artifact_path`): read them with `nexus_read_workspace_file`, list with `nexus_list_workspace_files`, get a download URL with `nexus_get_workspace_file_link`. The workspace is saved every 5 minutes and when the session stops.
 
 ## 5. Hardware-actuating tools are destructive
 
-Tools that send, set, write, stimulate or stop things on a device, or stop running work, are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `nexus_exec` and `nexus_stop_session`. The client **asks the user each time**.
+Tools that send, set, write, stimulate or stop things on a device, or stop running work, are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `nexus_exec`, `nexus_start_container`, `nexus_start_watch` and `nexus_stop_session`. The client **asks the user each time**.
 
 - Before calling one, say in a sentence what it will send or change, on which device, and why. Wait for the answer; never ask the user to approve a batch of different actions at once and never split an action to avoid the prompt.
 - Do not actuate unless the user's task calls for it. A bench device can be attached to a real ECU or vehicle.
