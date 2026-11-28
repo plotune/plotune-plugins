@@ -37,10 +37,11 @@ Recordings, periodic sends and similar work start an async **job**; do not wait 
 
 ## 5. Hardware-actuating tools are destructive
 
-Tools that send, set, write, stimulate or stop things on a device, or stop running work, are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `nexus_exec`, `nexus_start_container`, `nexus_start_watch` and `nexus_stop_session`. The client **asks the user each time**.
+Tools that send, set, write, stimulate or stop things on a device, stop running work, run code or replace a saved definition are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `nexus_exec`, `nexus_start_container`, `nexus_start_watch` and `nexus_stop_session`. The client **asks the user each time**.
 
 - Before calling one, say in a sentence what it will send or change, on which device, and why. Wait for the answer; never ask the user to approve a batch of different actions at once and never split an action to avoid the prompt.
 - Do not actuate unless the user's task calls for it. A bench device can be attached to a real ECU or vehicle.
+- This connection offers no firmware flashing. Do not flash through `nexus_exec`, containers or raw UDS or CAN sends, and say so if asked; the confirmations cannot be skipped.
 - A **read-only connection cannot actuate**, and cannot start a session either: it can list Edges and sessions and observe sessions that are already running. If the task needs more, say so and ask the user to reconnect with Full access.
 
 ## 6. Stop the session when you are done

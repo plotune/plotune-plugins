@@ -31,12 +31,12 @@ Stream is read-mostly engineering event history for one **project**. Calls go th
 - A page can be empty and still carry `nextCursor`. Continue with the returned cursor **and** the returned `now`; do not stop at the first empty page, and stop paging once you have what the question needs.
 - Operators: `equals`, `not_equals` (scalar value); `contains` (string value only); `greater_than`, `greater_or_equal`, `less_than`, `less_or_equal` (number value only); `exists`, `not_exists`, `is_null`, `is_true`, `is_false` (no value).
 - For counts, trends or breakdowns use `events_aggregate`, not paging through raw events. It submits an **analysis job** (pass a `requestId`; resubmitting the same one is idempotent). Poll it with `analysis_jobs_get`, which never scans events; results expire 15 minutes after completion. Cancel outstanding work with `analysis_jobs_cancel`.
-- For devices or sessions over time use `funnels_query`, `retention_query`, `lifecycle_query`, `stickiness_query` and `paths_query`; the matching `*_actors_query` tools list who is behind a result. They are jobs too.
+- For devices or sessions over time use `funnels_query`, `retention_query`, `lifecycle_query`, `stickiness_query` and `paths_query`; the `*_actors_query` tools (including `trends_actors_query` for an aggregate's trend) list who is behind a result. They are jobs too.
 - Say what range, filters and coverage an answer is based on. If a page limit or truncation cut the data off, say so; do not present a partial result as complete.
 
 ## 4. Writes need the user's confirmation
 
-Read-only by default. A read-only connection does not list the write tools below, but it does list the analysis tools of section 3. Before calling any tool that creates, updates, deletes or tests, state what will change and get a clear yes:
+Read-only by default. A read-only connection does not list the write tools below, but it does list the analysis tools of section 3 except `analysis_jobs_cancel`. Before calling any tool that creates, updates, deletes or tests, state what will change and get a clear yes:
 
 - Webhooks: `webhooks_create`, `webhooks_update`, `webhooks_delete`, and `webhook_test` (which sends a **real request** to the receiver).
 - Catalog and project documentation: `event_definition_create`, `event_definition_update`, `property_definition_update`, `action_create`, `action_update`, `action_delete`, `path_cleaning_rules_update`. These change the data's meaning for the whole team; propose the change first.

@@ -53,6 +53,7 @@ def make_tree(root: Path) -> Path:
     write(p / ".codex-plugin/plugin.json", "{}")
     write(p / "README.md", "readme")
     write(p / "scripts/__pycache__/tool.cpython-312.pyc", b"\x00")
+    write(p / "scripts/pool_hook.py", "print('hook')\n")  # runs only from hooks/hooks.json
     pos = {"description": "d", "prompt": "p", "tools_triggered": "plotune_projects_list", "expected_behavior": "e"}
     neg = {"description": "n", "prompt": "q"}
     write(p / ".openai-plugin/plugin.json", {
@@ -99,7 +100,7 @@ class PackageOpenAITest(unittest.TestCase):
         names = self.names(self.build())
         for banned in ("hooks/hooks.json", "evals/case/prompt.md", "index.js", "package.json", "README.md",
                        ".mcp.json", ".claude-plugin/plugin.json", ".codex-plugin/plugin.json",
-                       ".openai-plugin/plugin.json", "scripts/__pycache__/tool.cpython-312.pyc"):
+                       ".openai-plugin/plugin.json", "scripts/__pycache__/tool.cpython-312.pyc", "scripts/pool_hook.py"):
             self.assertNotIn(banned, names)
         self.assertFalse([n for n in names if n.startswith(("dist/", "hooks/")) or "__pycache__" in n])
 
