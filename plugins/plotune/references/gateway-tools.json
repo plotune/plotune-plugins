@@ -2,7 +2,7 @@
   "generatedFrom": {
     "repository": "plotune monorepo",
     "catalog": "packages/contracts/mcp-catalog",
-    "commit": "5613b9a06ea23b292ef395c058d4dfa1e4b4c112"
+    "commit": "82bd4a59ccd3614eff988b78a90b578d3d9dac2b"
   },
   "tools": [
     "acquire_can_interface",
@@ -54,8 +54,13 @@
     "dashboards_delete",
     "dashboards_get",
     "dashboards_list",
-    "dashboards_run",
+    "dashboards_plan",
     "dashboards_update",
+    "dds_assert",
+    "dds_causal_wait",
+    "dds_fault_inject",
+    "dds_ramp",
+    "dds_record_and_assert",
     "delete_can_interface",
     "describe_test_sequence_steps",
     "detach_bridge_can",
@@ -189,9 +194,9 @@
     "products_list",
     "products_set_maturity_levels",
     "project_context",
-    "project_members_list",
     "property_definition_update",
     "publish_dds_message",
+    "ramp_value",
     "read_bridge_can_frames",
     "read_bridge_serial_events",
     "read_uart",
@@ -224,7 +229,6 @@
     "reusable_widgets_get",
     "reusable_widgets_list",
     "role_get",
-    "role_members_list",
     "roles_list",
     "run_test_sequence",
     "security_events_list",
@@ -258,6 +262,7 @@
     "stream_health_list",
     "stream_health_summary",
     "stream_link",
+    "test_cases_batch_create",
     "test_cases_create",
     "test_cases_get",
     "test_cases_list",
@@ -285,7 +290,9 @@
     "wait_can_until",
     "wait_dbc_signal",
     "wait_dds_signal",
+    "wait_duration",
     "wait_for_test_sequence",
+    "wait_measurement",
     "wait_uart",
     "webhook_deliveries_list",
     "webhook_test",
@@ -300,6 +307,7 @@
   "renamed": {
     "cancel_job_tool": "nexus_cancel_job",
     "connect_device_to_pc": "nexus_connect_device_to_pc",
+    "dashboards_run": "dashboards_plan",
     "delete_workspace_file": "nexus_delete_workspace_file",
     "disconnect_device_from_pc": "nexus_disconnect_device_from_pc",
     "exec": "nexus_exec",
@@ -335,8 +343,10 @@
     "list_files": "Internal Nexus tool; the gateway does not list it.",
     "principal_context": "Describes the per-project exchanged token, not the gateway authorization.",
     "project_context_select": "Project selection is the project_id argument; Stream keeps no selection.",
+    "project_members_list": "Returns only the caller's own entry (the token carries no member list), so the name promises more than it does; members are managed on plotune.net.",
     "projects_list": "Superseded by plotune_projects_list, which covers every product.",
     "read_command_output": "Internal Nexus tool; the gateway does not list it.",
+    "role_members_list": "Returns only the caller's own entry when it has the role, so the name promises more than it does; members are managed on plotune.net.",
     "run_command": "Internal Nexus tool; the gateway does not list it."
   }
 }

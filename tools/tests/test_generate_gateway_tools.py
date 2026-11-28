@@ -51,6 +51,19 @@ class GenerateGatewayToolsTest(unittest.TestCase):
             "plotune_projects_list", "requirements_get", "events_query", "nexus_start_session", "nexus_exec",
             "nexus_list_jobs", "send_can_frame", "get_dds_domain_status"]))
 
+    def test_step_tools_named_in_sequence_steps_are_tools(self):
+        # The gateway's step tools (sequence-tools.ts) are in no product file; mapping.json sequenceSteps names every tool
+        # that runs a step type, step tools included, and the monorepo's catalog test keeps each of them served.
+        mapping = json.loads((self.catalog / "mapping.json").read_text(encoding="utf-8"))
+        mapping["sequenceSteps"] = {"_comment": "text", "flash_artifact": None, "dds_ramp": "dds_ramp",
+                                    "set_value": ["send_can_frame", "ramp_value"]}
+        write_json(self.catalog / "mapping.json", mapping)
+        data = gen.generate(self.catalog, commit="abc123")
+        self.assertIn("dds_ramp", data["tools"])
+        self.assertIn("ramp_value", data["tools"])
+        self.assertNotIn("text", data["tools"])
+        self.assertEqual(len(data["tools"]), len(set(data["tools"])))
+
     def test_renames_are_recorded_old_to_new(self):
         data = gen.generate(self.catalog, commit="abc123")
         self.assertEqual(data["renamed"], {"exec": "nexus_exec", "list_jobs_tool": "nexus_list_jobs",

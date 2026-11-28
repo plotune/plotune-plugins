@@ -24,21 +24,24 @@ Nexus runs **cloud sessions** on a Nexus Edge: a bench computer with test device
 
 Every device tool (CAN, UART, UDS, XCP, DDS, DoIP, bridge, test sequences, ...) requires the `session_id` of a running session. Pass the same `project_id` you started it with when the account has several Nexus projects. Read before you act: list the devices, look at the state (`get_uart_session`, `get_can_gateway`, `get_record_can`, ...), then act.
 
+Every operation a test sequence can run is also a tool of its own. For one check or action, call that tool: `ramp_value`, `wait_measurement`, `wait_duration`, `dds_ramp`, `dds_assert`, `dds_causal_wait`, `dds_fault_inject` and `dds_record_and_assert` each start a short sequence job and return its `job_id` at once. For a scripted test, `run_test_sequence` takes a whole definition (call `describe_test_sequence_steps` for the step fields). Either way, follow the job with `get_test_sequence` or `wait_for_test_sequence`, read the result with `get_test_sequence_verdict` (to trace a check to an RMS requirement, pass `requirement_id` to `wait_measurement`, `dds_assert`, `dds_causal_wait` or `dds_record_and_assert`, or set `metadata.requirement_id` in a `run_test_sequence` definition), and stop it with `cancel_test_sequence`. `run_test_sequence` and the step tools that actuate (`ramp_value`, `dds_ramp`, `dds_fault_inject`) are destructive, so the client asks each time: say which steps run and on which devices before you start one.
+
 ## 4. Long work runs as jobs
 
 Recordings, periodic sends and similar work start an async **job**; do not wait for it in one call.
 
 - `nexus_list_jobs` lists the session's jobs, `nexus_get_job_status` reads one, `nexus_wait_for_job` waits for a job for at most 240 s per call (poll again for longer work), `nexus_cancel_job` cancels it.
 - The relay stops **any single call after 300 s** with the tool error `timeout`. Every device tool bounds its own waits below that; never design a step that needs one call to run longer. Re-poll instead.
-- `nexus_exec` also returns a job id at once: follow it with `nexus_exec_status` and `nexus_exec_output`; `nexus_exec_cancel` stops it. Commands are audited and run as the session user in `/workspace`.
+- `nexus_exec` also returns a job id at once: follow it with `nexus_exec_status` and `nexus_exec_output`; `nexus_exec_cancel` stops it. In a cloud session the command runs as the session user in `/workspace`; on an Edge or machine target it runs as an unprivileged user, or as root only when the user asked for `admin` (Owner/Admin only). Commands are audited, and every `nexus_exec` call is confirmed by the user.
 - Results land as files in the session workspace (an `artifact_path`): read them with `nexus_read_workspace_file`, list with `nexus_list_workspace_files`, get a download URL with `nexus_get_workspace_file_link`. The workspace is saved every 5 minutes and when the session stops.
 
 ## 5. Hardware-actuating tools are destructive
 
-Tools that send, set, write, stimulate, start or stop things on a device are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `run_test_sequence`, `publish_dds_message`, `nexus_exec` and `nexus_stop_session`. The client **asks the user each time**.
+Tools that send, set, write, stimulate or stop things on a device, stop running work, run code or replace a saved definition are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `ramp_value`, `dds_ramp`, `dds_fault_inject`, `run_test_sequence`, `nexus_exec`, `nexus_start_container`, `nexus_start_watch` and `nexus_stop_session`. The client **asks the user each time**.
 
 - Before calling one, say in a sentence what it will send or change, on which device, and why. Wait for the answer; never ask the user to approve a batch of different actions at once and never split an action to avoid the prompt.
 - Do not actuate unless the user's task calls for it. A bench device can be attached to a real ECU or vehicle.
+- This connection offers no firmware flashing. Do not flash through `nexus_exec`, containers or raw UDS or CAN sends, and say so if asked; the confirmations cannot be skipped.
 - A **read-only connection cannot actuate**, and cannot start a session either: it can list Edges and sessions and observe sessions that are already running. If the task needs more, say so and ask the user to reconnect with Full access.
 
 ## 6. Stop the session when you are done

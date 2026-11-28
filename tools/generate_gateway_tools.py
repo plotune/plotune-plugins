@@ -6,7 +6,7 @@ Reads <catalog>/{rms,stream,nexus}.json, <catalog>/mapping.json and the Nexus de
 packages/contracts/mcp-catalog/catalog.ts does: a product tool keeps its name unless mapping.json
 renames it, tools listed under `exclude` are dropped, and Nexus device tools are included unless the
 manifest marks them internal (_meta.nexus.internal) or mapping.json excludes them. The gateway's own
-`plotune_projects_list` is added. The file also records the old (product) names of renamed tools and
+`plotune_projects_list` and its step tools (every tool `sequenceSteps` names) are added. The file also records the old (product) names of renamed tools and
 the excluded names, so check_gateway_tools.py can tell a skill which name to use.
 
 The plugins repository never needs the monorepo for its checks: it only reads the generated file.
@@ -79,6 +79,11 @@ def generate(catalog: Path, commit: str) -> dict:
             excluded[name] = reason
         else:
             add("nexus", name)
+    # Step tools (the gateway's own, sequence-tools.ts) are named in sequenceSteps with the device tools that run each step type.
+    for key, served in (mapping.get("sequenceSteps") or {}).items():
+        if key.startswith("_") or served is None:
+            continue
+        tools.update([served] if isinstance(served, str) else served)
     return {
         "generatedFrom": {"repository": "plotune monorepo", "catalog": "packages/contracts/mcp-catalog", "commit": commit},
         "tools": sorted(tools),

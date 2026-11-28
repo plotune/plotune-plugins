@@ -1,6 +1,6 @@
 {
   "name": "plotune",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Plotune through one connection (mcp.plotune.net): requirements (RMS), event history (Stream) and cloud Nexus sessions, with orientation skills and the Plotune requirements-engineering skills.",
   "author": {
     "name": "Plotune"
