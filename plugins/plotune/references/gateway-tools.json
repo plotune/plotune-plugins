@@ -2,7 +2,7 @@
   "generatedFrom": {
     "repository": "plotune monorepo",
     "catalog": "packages/contracts/mcp-catalog",
-    "commit": "882e86d24870c4138128382ca621b22b0a80230b"
+    "commit": "4e85ae27fc5a92c183549f54ae8570ad3387d29a"
   },
   "tools": [
     "acquire_can_interface",
@@ -28,6 +28,7 @@
     "baselines_freeze",
     "baselines_get",
     "baselines_list",
+    "cancel_test_sequence",
     "capture_can_snapshot",
     "capture_dds_snapshot",
     "capture_origins_list",
@@ -56,6 +57,7 @@
     "dashboards_plan",
     "dashboards_update",
     "delete_can_interface",
+    "describe_test_sequence_steps",
     "detach_bridge_can",
     "detach_bridge_serial",
     "diagrams_accept_bindings",
@@ -99,6 +101,8 @@
     "get_record_can",
     "get_record_uart",
     "get_record_xcp",
+    "get_test_sequence",
+    "get_test_sequence_verdict",
     "get_uart_modem_lines",
     "get_uart_session",
     "hierarchy_batch_set",
@@ -220,6 +224,7 @@
     "reusable_widgets_list",
     "role_get",
     "roles_list",
+    "run_test_sequence",
     "security_events_list",
     "send_bridge_can_frame",
     "send_can_frame",
@@ -279,6 +284,7 @@
     "wait_can_until",
     "wait_dbc_signal",
     "wait_dds_signal",
+    "wait_for_test_sequence",
     "wait_uart",
     "webhook_deliveries_list",
     "webhook_test",
@@ -325,11 +331,7 @@
     "admin_projects_set_state": "Platform System Admin operation across projects; not for the public gateway.",
     "analysis_estimate": "Takes a tool name as an argument (a dispatcher); the gateway offers no tool that names another tool.",
     "cancel_command": "Internal Nexus tool; the gateway does not list it.",
-    "cancel_test_sequence": "Belongs to run_test_sequence, which the gateway does not offer.",
-    "describe_test_sequence_steps": "Only describes run_test_sequence, which the gateway does not offer.",
     "get_command": "Internal Nexus tool; the gateway does not list it.",
-    "get_test_sequence": "Belongs to run_test_sequence, which the gateway does not offer.",
-    "get_test_sequence_verdict": "Belongs to run_test_sequence, which the gateway does not offer.",
     "list_files": "Internal Nexus tool; the gateway does not list it.",
     "principal_context": "Describes the per-project exchanged token, not the gateway authorization.",
     "project_context_select": "Project selection is the project_id argument; Stream keeps no selection.",
@@ -337,8 +339,6 @@
     "projects_list": "Superseded by plotune_projects_list, which covers every product.",
     "read_command_output": "Internal Nexus tool; the gateway does not list it.",
     "role_members_list": "Returns only the caller's own entry when it has the role, so the name promises more than it does; members are managed on plotune.net.",
-    "run_command": "Internal Nexus tool; the gateway does not list it.",
-    "run_test_sequence": "Runs a list of operations, several of which (dds_recording_assert, dds_fault_inject, ramp_value, ...) have no tool of their own; OpenAI review 2026-11-28 asked for every operation as its own tool. Available on the Edge's own MCP endpoint.",
-    "wait_for_test_sequence": "Belongs to run_test_sequence, which the gateway does not offer."
+    "run_command": "Internal Nexus tool; the gateway does not list it."
   }
 }

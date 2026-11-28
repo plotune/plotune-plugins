@@ -1,6 +1,6 @@
 ---
 name: nexus-cloud-orientation
-description: Use before starting or operating a cloud Nexus session through the plotune MCP server (mcp.plotune.net) - finding an Edge, starting a session on its test devices, running device tools (CAN, UART, UDS, XCP, DDS), long recordings as jobs, files in the session workspace, and stopping the session. Covers polling, the 300 s relay limit, which tools actuate hardware and are confirmed every time, and what read-only connections cannot do.
+description: Use before starting or operating a cloud Nexus session through the plotune MCP server (mcp.plotune.net) - finding an Edge, starting a session on its test devices, running device tools (CAN, UART, UDS, XCP, DDS, test sequences), long recordings as jobs, files in the session workspace, and stopping the session. Covers polling, the 300 s relay limit, which tools actuate hardware and are confirmed every time, and what read-only connections cannot do.
 ---
 
 # Nexus cloud orientation (gateway)
@@ -22,9 +22,9 @@ Nexus runs **cloud sessions** on a Nexus Edge: a bench computer with test device
 
 ## 3. Device tools take `session_id`
 
-Every device tool (CAN, UART, UDS, XCP, DDS, DoIP, bridge, ...) requires the `session_id` of a running session. Pass the same `project_id` you started it with when the account has several Nexus projects. Read before you act: list the devices, look at the state (`get_uart_session`, `get_can_gateway`, `get_record_can`, ...), then act.
+Every device tool (CAN, UART, UDS, XCP, DDS, DoIP, bridge, test sequences, ...) requires the `session_id` of a running session. Pass the same `project_id` you started it with when the account has several Nexus projects. Read before you act: list the devices, look at the state (`get_uart_session`, `get_can_gateway`, `get_record_can`, ...), then act.
 
-This connection has no scripted test sequences: run a test as individual tool calls, each confirmed as below.
+Every operation a test sequence can run is also a tool of its own. For one check or action, call that tool: `ramp_value`, `wait_measurement`, `wait_duration`, `dds_ramp`, `dds_assert`, `dds_causal_wait`, `dds_fault_inject` and `dds_record_and_assert` each start a short sequence job and return its `job_id` at once. For a scripted test, `run_test_sequence` takes a whole definition (call `describe_test_sequence_steps` for the step fields). Either way, follow the job with `get_test_sequence` or `wait_for_test_sequence`, read the result with `get_test_sequence_verdict` (pass `requirement_id` to trace it to RMS), and stop it with `cancel_test_sequence`. A sequence is confirmed as one destructive call: say which steps it runs and on which devices before you start it.
 
 ## 4. Long work runs as jobs
 
@@ -37,7 +37,7 @@ Recordings, periodic sends and similar work start an async **job**; do not wait 
 
 ## 5. Hardware-actuating tools are destructive
 
-Tools that send, set, write, stimulate or stop things on a device, stop running work, run code or replace a saved definition are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `nexus_exec`, `nexus_start_container`, `nexus_start_watch` and `nexus_stop_session`. The client **asks the user each time**.
+Tools that send, set, write, stimulate or stop things on a device, stop running work, run code or replace a saved definition are marked **destructive**, for example `send_can_frame`, `send_can_frame_batch`, `send_periodic_can_frame`, `send_dbc_message`, `send_uart`, `send_uds_request`, `set_device_mode`, `set_uart_modem_lines`, `set_xcp_calibration`, `xcp_unlock`, `stim_xcp_signals`, `publish_dds_message`, `stop_record_can`, `stop_periodic_can_frame`, `close_uart_session`, `ramp_value`, `dds_ramp`, `dds_fault_inject`, `run_test_sequence`, `nexus_exec`, `nexus_start_container`, `nexus_start_watch` and `nexus_stop_session`. The client **asks the user each time**.
 
 - Before calling one, say in a sentence what it will send or change, on which device, and why. Wait for the answer; never ask the user to approve a batch of different actions at once and never split an action to avoid the prompt.
 - Do not actuate unless the user's task calls for it. A bench device can be attached to a real ECU or vehicle.
