@@ -50,4 +50,4 @@ Every product tool takes an optional `project_id` (UUID).
 
 ## 7. Where requirements live
 
-With this plugin, Plotune RMS through the connector is the requirements store. Some requirements skills also describe a local SQLite, CSV or Google Sheets workspace and an AI-pool meter; those need the `scripts/` and `hooks/` folders of the full plugin from the Plotune marketplace. If this plugin has no `scripts/` or no `hooks/` folder (the Claude directory and OpenAI editions), those steps are not available or not metered: use RMS, and tell the user that local workspaces need the full plugin.
+With this plugin, Plotune RMS through the connector is the requirements store. Some requirements skills also describe a local SQLite, CSV or Google Sheets workspace and an AI-pool meter; those need the `scripts/` and `hooks/` folders of the full plugin from the Plotune marketplace. Without a `scripts/` folder (the Claude directory edition), the local-workspace steps are not available: use RMS, and tell the user that local workspaces need the full plugin. Without `hooks/` (the Claude directory and OpenAI editions), subagent calls are not metered automatically.
